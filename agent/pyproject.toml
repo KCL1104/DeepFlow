@@ -1,0 +1,24 @@
+[project]
+name = "agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "langchain>=1.2.4",
+    "langchain-openai>=1.1.7",
+    "opik>=1.9.87",
+    "opik-optimizer>=2.3.11",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
+    "python-dotenv>=1.2.1",
+    "slack-sdk>=3.39.0",
+    "tqdm>=4.67.1",
+    "upstash-redis>=1.5.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

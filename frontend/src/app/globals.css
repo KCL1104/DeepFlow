@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/* Light theme (default) */
+:root {
+  --background: #fafafa;
+  --foreground: #2d2d2d;
+
+  /* Sage Green Palette */
+  --sage-50: #f6f7f6;
+  --sage-100: #e3e7e3;
+  --sage-200: #c7d0c7;
+  --sage-300: #a3b2a3;
+  --sage-400: #7a8f7a;
+  --sage-500: #5a7d5a;
+  --sage-600: #4a6b4a;
+  --sage-700: #3d573d;
+  --sage-800: #344834;
+  --sage-900: #2d3d2d;
+
+  /* Amber Palette */
+  --amber-400: #fbbf24;
+  --amber-500: #d4a574;
+  --amber-600: #c4956a;
+}
+
+/* Dark theme - triggered by .dark class from next-themes */
+.dark {
+  --background: #1e1e1e;
+  --foreground: #e0e0e0;
+
+  --sage-50: #1a2e1a;
+  --sage-100: #243524;
+  --sage-200: #2d3d2d;
+  --sage-300: #3d573d;
+  --sage-400: #8fbc8f;
+  --sage-500: #6b8e6b;
+  --sage-600: #5a7d5a;
+  --sage-700: #4a6b4a;
+  --sage-800: #8fbc8f;
+  --sage-900: #c7d0c7;
+
+  --amber-400: #e8b86d;
+  --amber-500: #c9a05a;
+  --amber-600: #b8904a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Sage colors */
+  --color-sage-50: var(--sage-50);
+  --color-sage-100: var(--sage-100);
+  --color-sage-200: var(--sage-200);
+  --color-sage-300: var(--sage-300);
+  --color-sage-400: var(--sage-400);
+  --color-sage-500: var(--sage-500);
+  --color-sage-600: var(--sage-600);
+  --color-sage-700: var(--sage-700);
+  --color-sage-800: var(--sage-800);
+  --color-sage-900: var(--sage-900);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Custom animations */
+@keyframes pulse-soft {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}

@@ -1,0 +1,847 @@
+[
+    {
+        "id": "test-001",
+        "input": {
+            "content": "URGENT: Production database is down! Need immediate help!",
+            "sender": "ops-team@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-002",
+        "input": {
+            "content": "Hey, can you review my PR when you get a chance? No rush.",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-003",
+        "input": {
+            "content": "Team lunch tomorrow at noon! Please RSVP.",
+            "sender": "admin@company.com",
+            "source": "email",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-004",
+        "input": {
+            "content": "The CEO needs the quarterly report ASAP for the board meeting in 2 hours.",
+            "sender": "ceo-assistant@company.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-005",
+        "input": {
+            "content": "Weekly newsletter: 10 tips for better productivity",
+            "sender": "newsletter@randomsite.com",
+            "source": "email",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-006",
+        "input": {
+            "content": "Client is threatening to cancel the contract if we don't fix the bug today.",
+            "sender": "account-manager@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-007",
+        "input": {
+            "content": "FYI: We updated the documentation for the API. Check it out when you can.",
+            "sender": "docs-team@company.com",
+            "source": "notion",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-008",
+        "input": {
+            "content": "Security alert: Suspicious login attempt detected on your account.",
+            "sender": "security@company.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-009",
+        "input": {
+            "content": "Can we schedule a 1:1 sometime this week to discuss career growth?",
+            "sender": "manager@company.com",
+            "source": "slack",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-010",
+        "input": {
+            "content": "CRITICAL: AWS billing alert - you've exceeded $10,000 this month",
+            "sender": "aws-alerts@amazon.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-011",
+        "input": {
+            "content": "Reminder: Your dentist appointment is tomorrow at 3pm",
+            "sender": "appointments@clinic.com",
+            "source": "email",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-012",
+        "input": {
+            "content": "The deployment failed. CI/CD pipeline is blocking all merges.",
+            "sender": "ci-bot@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-013",
+        "input": {
+            "content": "Happy birthday! 🎂 Hope you have an amazing day!",
+            "sender": "friend@personal.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-014",
+        "input": {
+            "content": "Sprint planning meeting starts in 5 minutes. Please join.",
+            "sender": "scrum-master@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "standard",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-015",
+        "input": {
+            "content": "Your pull request has been approved. Ready to merge.",
+            "sender": "github-bot@github.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-016",
+        "input": {
+            "content": "EMERGENCY: Fire alarm test in Building A. Please evacuate if you're there.",
+            "sender": "facilities@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-017",
+        "input": {
+            "content": "New comment on your Jira ticket PROJ-1234: 'Looks good, minor suggestion...'",
+            "sender": "jira@company.atlassian.net",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-018",
+        "input": {
+            "content": "The investor meeting got moved up to tomorrow 9am. Need your deck updated tonight.",
+            "sender": "founder@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-019",
+        "input": {
+            "content": "Join our webinar: 'The Future of AI in Enterprise' - Register now!",
+            "sender": "marketing@vendor.com",
+            "source": "email",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-020",
+        "input": {
+            "content": "Quick question: What's the status of the API integration? Any blockers?",
+            "sender": "pm@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-021",
+        "input": {
+            "content": "LEGAL NOTICE: Your response is required within 24 hours regarding contract terms.",
+            "sender": "legal@company.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-022",
+        "input": {
+            "content": "Shared a new page with you: 'Q4 OKR Planning'",
+            "sender": "notion@notion.so",
+            "source": "notion",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-023",
+        "input": {
+            "content": "Your credit card ending in 4242 has been charged $500. If this wasn't you, call immediately.",
+            "sender": "alerts@bank.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-024",
+        "input": {
+            "content": "Great job on the presentation today! The client loved it.",
+            "sender": "director@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-025",
+        "input": {
+            "content": "Standup in 2 minutes. Are you joining?",
+            "sender": "teammate@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "standard",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-026",
+        "input": {
+            "content": "I've been trying to reach you. Please call me back when you can.",
+            "sender": "unknown@external.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-027",
+        "input": {
+            "content": "GitHub: Dependabot detected a critical vulnerability in your dependencies",
+            "sender": "noreply@github.com",
+            "source": "email",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-028",
+        "input": {
+            "content": "Your flight to Tokyo on Dec 15 has been cancelled. Please rebook.",
+            "sender": "airline@travel.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-029",
+        "input": {
+            "content": "Thoughts on using Kubernetes vs Docker Swarm for our setup?",
+            "sender": "devops@company.com",
+            "source": "slack",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-030",
+        "input": {
+            "content": "Your package has been delivered and left at the front door.",
+            "sender": "shipping@amazon.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-031",
+        "input": {
+            "content": "Code freeze is in 30 minutes. Please merge your PRs now.",
+            "sender": "release-manager@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-032",
+        "input": {
+            "content": "Hey, what do you want for lunch today? It's 11:30 now.",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW",
+            "current_time": "11:30"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        },
+        "note": "30 min before noon - moderate time pressure"
+    },
+    {
+        "id": "test-033",
+        "input": {
+            "content": "Lunch order closing in 10 mins! What do you want? It's 11:50.",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW",
+            "current_time": "11:50"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "standard",
+            "should_interrupt": true
+        },
+        "note": "10 min before noon - high time pressure"
+    },
+    {
+        "id": "test-034",
+        "input": {
+            "content": "We already ordered lunch. Did you want anything?",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW",
+            "current_time": "12:05"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false
+        },
+        "note": "Past noon - opportunity missed, low urgency now"
+    },
+    {
+        "id": "test-035",
+        "input": {
+            "content": "Server RAM usage at 95%. May crash soon if not addressed.",
+            "sender": "monitoring@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-036",
+        "input": {
+            "content": "Can you pair program with me on this tricky bug? I'm stuck.",
+            "sender": "junior-dev@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-037",
+        "input": {
+            "content": "Your domain name expires in 3 days. Renew now to avoid losing it.",
+            "sender": "billing@registrar.com",
+            "source": "email",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-038",
+        "input": {
+            "content": "Interview candidate is waiting in the lobby. You're the interviewer.",
+            "sender": "hr@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-039",
+        "input": {
+            "content": "Thanks for your help yesterday! Really appreciated it.",
+            "sender": "teammate@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-040",
+        "input": {
+            "content": "The new design mockups are ready. Take a look when you have time.",
+            "sender": "designer@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-041",
+        "input": {
+            "content": "嘿，這個 PR 可以幫我 review 一下嗎？",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        },
+        "note": "Chinese - PR review request"
+    },
+    {
+        "id": "test-042",
+        "input": {
+            "content": "緊急！Production 掛了，需要馬上 debug！",
+            "sender": "ops@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true
+        },
+        "note": "Chinese - Production down"
+    },
+    {
+        "id": "test-043",
+        "input": {
+            "content": "老闆說下午的 meeting 要 demo 新功能，你準備好了嗎？",
+            "sender": "pm@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true
+        },
+        "note": "Chinese - Boss demo request"
+    },
+    {
+        "id": "test-044",
+        "input": {
+            "content": "今天 team building 要去哪？有人有建議嗎？",
+            "sender": "hr@company.com",
+            "source": "slack",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false
+        },
+        "note": "Chinese - Team building suggestion"
+    },
+    {
+        "id": "test-045",
+        "input": {
+            "content": "API response time 太慢了，client 在 complain，需要 optimize 一下",
+            "sender": "backend-lead@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "standard",
+            "should_interrupt": true
+        },
+        "note": "Mixed Chinese-English - API performance"
+    },
+    {
+        "id": "test-046",
+        "input": {
+            "content": "這個 bug 是 P0，麻煩今天 fix 一下，customer 很急",
+            "sender": "support@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": false
+        },
+        "note": "Mixed - P0 bug with customer pressure"
+    },
+    {
+        "id": "test-047",
+        "input": {
+            "content": "Slack channel 裡有人問 deployment 的問題，你比較熟可以回一下嗎",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        },
+        "note": "Mixed - Slack question forwarding"
+    },
+    {
+        "id": "test-048",
+        "input": {
+            "content": "下班後要不要一起去喝個 coffee？",
+            "sender": "friend@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "low",
+            "should_interrupt": false
+        },
+        "note": "Mixed - Social invitation"
+    },
+    {
+        "id": "test-049",
+        "input": {
+            "content": "Your SSL certificate expires tomorrow. Immediate action required.",
+            "sender": "ssl-monitor@company.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-050",
+        "input": {
+            "content": "Just pushed a hotfix. Can someone verify it works in staging?",
+            "sender": "senior-dev@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "standard",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-051",
+        "input": {
+            "content": "我們的 Kubernetes cluster 有問題，pod 一直 crash",
+            "sender": "devops@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": false
+        },
+        "note": "Mixed - K8s pod crashing"
+    },
+    {
+        "id": "test-052",
+        "input": {
+            "content": "New episode of your favorite podcast is out!",
+            "sender": "podcast@spotify.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-053",
+        "input": {
+            "content": "Board meeting rescheduled to today 4pm. Please prepare your updates.",
+            "sender": "ceo@company.com",
+            "source": "email",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true
+        }
+    },
+    {
+        "id": "test-054",
+        "input": {
+            "content": "你的 PR merge 之後 CI 掛了，可能要 rollback",
+            "sender": "ci-bot@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": false
+        },
+        "note": "Mixed - CI failure after merge"
+    },
+    {
+        "id": "test-055",
+        "input": {
+            "content": "Do you have the Figma link for the new dashboard?",
+            "sender": "frontend-dev@company.com",
+            "source": "slack",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-056",
+        "input": {
+            "content": "帳號被 lock 了，沒辦法 push code，urgent！",
+            "sender": "new-hire@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "standard",
+            "should_interrupt": true
+        },
+        "note": "Mixed - Account locked"
+    },
+    {
+        "id": "test-057",
+        "input": {
+            "content": "Remember to submit your timesheet by end of day.",
+            "sender": "hr-system@company.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false
+        }
+    },
+    {
+        "id": "test-058",
+        "input": {
+            "content": "客戶說 payment failed，transaction ID: TXN-12345，需要查一下",
+            "sender": "support@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true
+        },
+        "note": "Mixed - Payment failure"
+    },
+    {
+        "id": "test-059",
+        "input": {
+            "content": "這週五的 happy hour 你要來嗎？",
+            "sender": "social-committee@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false
+        },
+        "note": "Chinese - Happy hour invitation"
+    }
+]

@@ -1,0 +1,212 @@
+"""
+DeepFlow ReAct Agent
+
+A ReAct (Reasoning + Acting) agent that can analyze messages and take actions
+using the available tools.
+"""
+
+import os
+from typing import Optional
+
+from langchain.agents import create_agent
+from langchain_openai import ChatOpenAI
+
+from ..config import get_settings
+from ..tracer import init_opik
+from ..tools import (
+    add_to_queue,
+    send_auto_reply,
+    update_task_status,
+    notify_user_tool,
+    send_browser_notification,
+)
+
+
+# System prompt for the agent
+AGENT_SYSTEM_PROMPT = """You are DeepFlow Sentinel, an intelligent executive assistant that protects users' focus time.
+
+## User Context
+- User ID: {user_id}
+- Current State: {user_state}
+- State Meanings:
+  - FLOW: Deep focus mode. Only urgent (score >= 9) matters.
+  - SHALLOW: Light work. Moderate urgency (score >= 6) is acceptable.
+  - IDLE: Available. All notifications allowed.
+
+## Your Decision Process
+1. **Analyze** the incoming message for urgency (0-10) and category
+2. **Decide** what action to take based on user state and urgency
+3. **Execute** the appropriate tool(s)
+
+## Category Mapping (CRITICAL):
+- Urgency 10-9: critical → Interrupt immediately if FLOW, always add to queue
+- Urgency 8-6: urgent → Add to queue, check deadline for notification
+- Urgency 5-4: standard → Add to queue, auto-reply if user is in FLOW
+- Urgency 3-2: low → Add to queue with low priority
+- Urgency 1-0: discard → Do not add to queue, optionally auto-reply
+
+## Browser Notification Rules:
+- **Critical (urgency 10-9)**: ALWAYS send browser notification immediately
+- **Urgent (urgency 8-6)**: Send notification ONLY if deadline is within 2 hours
+- **Standard/Low (urgency 5-0)**: DO NOT send browser notification
+
+## Tool Usage Guidelines
+- Use `add_to_queue` to add tasks to the user's priority queue
+- Use `send_auto_reply` when user is in FLOW and message is not urgent
+- Use `send_browser_notification` for critical items OR urgent items with tight deadlines
+- Use `update_task_status` to update existing tasks
+- Use `notify_user_tool` for system notifications (not browser push)
+
+Be accurate. Misjudging urgency can either waste the user's focus time or cause them to miss critical issues.
+"""
+
+
+def create_deepflow_agent(
+    user_id: str,
+    user_state: str = "IDLE",
+    verbose: bool = False
+):
+    """
+    Create a DeepFlow agent with all tools.
+    
+    Args:
+        user_id: The user's unique identifier
+        user_state: Current user state (FLOW/SHALLOW/IDLE)
+        verbose: Whether to print agent reasoning
+    
+    Returns:
+        Agent ready to process messages
+    """
+    # Initialize Opik tracing
+    init_opik()
+    
+    # Get settings
+    settings = get_settings()
+    
+    # Initialize LLM
+    llm = ChatOpenAI(
+        model=settings.llm_model,
+        api_key=settings.openai_api_key,
+        base_url=settings.openai_api_base,
+        temperature=0,  # Deterministic for consistent actions
+    )
+    
+    # Available tools
+    tools = [
+        add_to_queue,
+        send_auto_reply,
+        update_task_status,
+        notify_user_tool,
+        send_browser_notification,
+    ]
+    
+    # Format system prompt with user context
+    system_prompt = AGENT_SYSTEM_PROMPT.format(
+        user_id=user_id,
+        user_state=user_state
+    )
+    
+    # Create the agent using LangChain v1 API
+    agent = create_agent(
+        llm,
+        tools,
+        system_prompt=system_prompt,
+    )
+    
+    return agent
+
+
+async def process_message(
+    user_id: str,
+    user_state: str,
+    message_content: str,
+    sender: str,
+    source: str = "manual",
+    source_id: str = "",
+    verbose: bool = False
+) -> dict:
+    """
+    Process an incoming message through the DeepFlow agent.
+    
+    This is the main entry point for processing messages.
+    
+    Args:
+        user_id: User's unique identifier
+        user_state: Current state (FLOW/SHALLOW/IDLE)
+        message_content: The message text to analyze
+        sender: Who sent the message
+        source: Where the message came from (slack/email/telegram/manual)
+        source_id: Original message ID from the source
+        verbose: Print reasoning
+    
+    Returns:
+        Dict with agent's actions and final answer
+    """
+    # Create agent
+    agent = create_deepflow_agent(
+        user_id=user_id,
+        user_state=user_state,
+        verbose=verbose
+    )
+    
+    # Format input message
+    input_message = {
+        "role": "user",
+        "content": f"""New message received:
+From: {sender}
+Source: {source}
+Content: {message_content}
+
+User ID: {user_id}
+User State: {user_state}
+
+Analyze this message and take appropriate action(s)."""
+    }
+    
+    # Run agent using LangGraph stream
+    final_output = None
+    tool_calls = []
+    
+    async for step in agent.astream({"messages": [input_message]}):
+        if verbose:
+            print(f"Step: {step}")
+        
+        # Collect tool calls and final output
+        if "messages" in step:
+            for msg in step["messages"]:
+                if hasattr(msg, "tool_calls") and msg.tool_calls:
+                    tool_calls.extend(msg.tool_calls)
+                if hasattr(msg, "content") and msg.content:
+                    final_output = msg.content
+    
+    return {
+        "input": message_content,
+        "output": final_output or "Agent completed",
+        "tool_calls": tool_calls,
+        "user_id": user_id,
+        "user_state": user_state,
+    }
+
+
+def process_message_sync(
+    user_id: str,
+    user_state: str,
+    message_content: str,
+    sender: str,
+    source: str = "manual",
+    source_id: str = "",
+    verbose: bool = False
+) -> dict:
+    """
+    Synchronous version of process_message.
+    """
+    import asyncio
+    return asyncio.run(process_message(
+        user_id=user_id,
+        user_state=user_state,
+        message_content=message_content,
+        sender=sender,
+        source=source,
+        source_id=source_id,
+        verbose=verbose
+    ))

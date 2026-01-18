@@ -1,0 +1,11 @@
+"""Prompts package."""
+
+from .semantic_gateway import SEMANTIC_GATEWAY_SYSTEM, SEMANTIC_GATEWAY_USER
+from .auto_negotiator import AUTO_NEGOTIATOR_SYSTEM, AUTO_NEGOTIATOR_USER
+
+__all__ = [
+    "SEMANTIC_GATEWAY_SYSTEM",
+    "SEMANTIC_GATEWAY_USER",
+    "AUTO_NEGOTIATOR_SYSTEM",
+    "AUTO_NEGOTIATOR_USER",
+]
