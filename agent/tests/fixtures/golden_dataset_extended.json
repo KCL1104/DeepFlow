@@ -1,0 +1,362 @@
+[
+    {
+        "id": "zh-001",
+        "input": {
+            "content": "緊急！系統現在完全掛了，客戶都在抱怨！",
+            "sender": "ops@company.com",
+            "source": "telegram",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ]
+        }
+    },
+    {
+        "id": "zh-002",
+        "input": {
+            "content": "有空的時候幫我看一下這個 PR，不急",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue",
+                "send_auto_reply"
+            ]
+        }
+    },
+    {
+        "id": "zh-003",
+        "input": {
+            "content": "明天下午三點要開會，請準備季度報告",
+            "sender": "manager@company.com",
+            "source": "email",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ]
+        }
+    },
+    {
+        "id": "zh-004",
+        "input": {
+            "content": "週五團隊聚餐，有要參加的請回覆～",
+            "sender": "hr@company.com",
+            "source": "email",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ]
+        }
+    },
+    {
+        "id": "zh-005",
+        "input": {
+            "content": "客戶說如果今天不修好 bug 就要取消合約！！！",
+            "sender": "sales@company.com",
+            "source": "telegram",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ]
+        }
+    },
+    {
+        "id": "zh-006",
+        "input": {
+            "content": "新的公司政策已經更新在 Notion 上了，方便時看一下",
+            "sender": "admin@company.com",
+            "source": "notion",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "send_auto_reply"
+            ]
+        }
+    },
+    {
+        "id": "zh-007",
+        "input": {
+            "content": "恭喜！您獲得了免費的 iPhone！點擊領取...",
+            "sender": "spam@random.com",
+            "source": "email",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 0,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": []
+        }
+    },
+    {
+        "id": "zh-008",
+        "input": {
+            "content": "老闆剛剛問你那份報告，他五分鐘後要用",
+            "sender": "assistant@company.com",
+            "source": "telegram",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ]
+        }
+    },
+    {
+        "id": "zh-009",
+        "input": {
+            "content": "這週的週報記得要交喔",
+            "sender": "team-lead@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue",
+                "send_auto_reply"
+            ]
+        }
+    },
+    {
+        "id": "zh-010",
+        "input": {
+            "content": "伺服器 CPU 使用率超過 90%，可能需要擴容",
+            "sender": "monitoring@company.com",
+            "source": "slack",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ]
+        }
+    },
+    {
+        "id": "tool-001",
+        "input": {
+            "content": "Server is on fire! All services are down! CEO is paging!",
+            "sender": "ops-critical@company.com",
+            "source": "pagerduty",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ],
+            "tool_trigger_reason": "Critical urgency always triggers telegram notification"
+        }
+    },
+    {
+        "id": "tool-002",
+        "input": {
+            "content": "Hey, just wanted to say hi! How's your day going?",
+            "sender": "friend@personal.com",
+            "source": "telegram",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "send_auto_reply"
+            ],
+            "tool_trigger_reason": "Personal chat during FLOW should get auto-reply"
+        }
+    },
+    {
+        "id": "tool-003",
+        "input": {
+            "content": "Please review the attached proposal by end of day",
+            "sender": "partner@vendor.com",
+            "source": "email",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "tool_trigger_reason": "Deadline mentioned but not critical - add to queue only"
+        }
+    },
+    {
+        "id": "tool-004",
+        "input": {
+            "content": "The build is failing on main branch, blocking all deployments",
+            "sender": "ci-bot@company.com",
+            "source": "slack",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ],
+            "tool_trigger_reason": "Blocking issue should notify even in IDLE state"
+        }
+    },
+    {
+        "id": "tool-005",
+        "input": {
+            "content": "Your expense report from last month is still pending approval",
+            "sender": "finance@company.com",
+            "source": "email",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue",
+                "send_auto_reply"
+            ],
+            "tool_trigger_reason": "Low priority in FLOW - queue and auto-reply"
+        }
+    },
+    {
+        "id": "tool-006",
+        "input": {
+            "content": "Meeting in 30 mins with the investor. Don't forget!",
+            "sender": "founder@company.com",
+            "source": "telegram",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ],
+            "tool_trigger_reason": "Time-sensitive + important person = critical"
+        }
+    },
+    {
+        "id": "tool-007",
+        "input": {
+            "content": "Can you update the task status for ticket #1234 to done?",
+            "sender": "pm@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "update_task_status"
+            ],
+            "tool_trigger_reason": "Direct request to update task status"
+        }
+    },
+    {
+        "id": "tool-008",
+        "input": {
+            "content": "Please notify the team that the release is delayed",
+            "sender": "eng-lead@company.com",
+            "source": "slack",
+            "user_state": "IDLE"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "notify_user_tool",
+                "add_to_queue"
+            ],
+            "tool_trigger_reason": "Request to notify others"
+        }
+    },
+    {
+        "id": "mixed-001",
+        "input": {
+            "content": "Hi 你好，麻煩幫我處理一下這個問題，today EOD please",
+            "sender": "colleague@company.com",
+            "source": "slack",
+            "user_state": "SHALLOW"
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "tool_trigger_reason": "Mixed language with deadline"
+        }
+    },
+    {
+        "id": "mixed-002",
+        "input": {
+            "content": "ASAP 需要你幫忙 review 這個 code，production 上有 bug",
+            "sender": "dev@company.com",
+            "source": "telegram",
+            "user_state": "FLOW"
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_telegram_notification"
+            ],
+            "tool_trigger_reason": "Production bug with ASAP keyword"
+        }
+    }
+]

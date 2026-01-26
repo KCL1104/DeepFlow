@@ -33,10 +33,14 @@ AGENT_SYSTEM_PROMPT = """You are DeepFlow Sentinel, an intelligent executive ass
   - SHALLOW: Light work. Moderate urgency (score >= 6) is acceptable.
   - IDLE: Available. All notifications allowed.
 
+## Recent Conversation History
+{conversation_history}
+
 ## Your Decision Process
 1. **Analyze** the incoming message for urgency (0-10) and category
-2. **Decide** what action to take based on user state and urgency
-3. **Execute** the appropriate tool(s)
+2. **Consider** the conversation history for context
+3. **Decide** what action to take based on user state and urgency
+4. **Execute** the appropriate tool(s)
 
 ## Category Mapping (CRITICAL):
 - Urgency 10-9: critical → Interrupt immediately if FLOW, always add to queue
@@ -45,17 +49,17 @@ AGENT_SYSTEM_PROMPT = """You are DeepFlow Sentinel, an intelligent executive ass
 - Urgency 3-2: low → Add to queue with low priority
 - Urgency 1-0: discard → Do not add to queue, optionally auto-reply
 
-## Browser Notification Rules:
-- **Critical (urgency 10-9)**: ALWAYS send browser notification immediately
-- **Urgent (urgency 8-6)**: Send notification ONLY if deadline is within 2 hours
-- **Standard/Low (urgency 5-0)**: DO NOT send browser notification
+## Telegram Notification Rules:
+- **Critical (urgency 10-9)**: ALWAYS send Telegram notification immediately
+- **Urgent (urgency 8-6)**: Send Telegram notification ONLY if deadline is within 2 hours
+- **Standard/Low (urgency 5-0)**: DO NOT send notification
 
 ## Tool Usage Guidelines
 - Use `add_to_queue` to add tasks to the user's priority queue
 - Use `send_auto_reply` when user is in FLOW and message is not urgent
-- Use `send_browser_notification` for critical items OR urgent items with tight deadlines
+- Use `send_telegram_notification` for critical items OR urgent items with tight deadlines
 - Use `update_task_status` to update existing tasks
-- Use `notify_user_tool` for system notifications (not browser push)
+- Use `notify_user_tool` for system notifications (internal)
 
 Be accurate. Misjudging urgency can either waste the user's focus time or cause them to miss critical issues.
 """
@@ -64,7 +68,8 @@ Be accurate. Misjudging urgency can either waste the user's focus time or cause 
 def create_deepflow_agent(
     user_id: str,
     user_state: str = "IDLE",
-    verbose: bool = False
+    verbose: bool = False,
+    include_memory: bool = True
 ):
     """
     Create a DeepFlow agent with all tools.
@@ -73,6 +78,7 @@ def create_deepflow_agent(
         user_id: The user's unique identifier
         user_state: Current user state (FLOW/SHALLOW/IDLE)
         verbose: Whether to print agent reasoning
+        include_memory: Whether to include conversation history
     
     Returns:
         Agent ready to process messages
@@ -83,6 +89,16 @@ def create_deepflow_agent(
     # Get settings
     settings = get_settings()
     
+    # Get conversation history if enabled
+    conversation_history = "No recent conversation history."
+    if include_memory:
+        try:
+            from ..memory import get_conversation_memory
+            memory = get_conversation_memory()
+            conversation_history = memory.get_formatted_history(user_id, limit=5)
+        except Exception as e:
+            logger.debug(f"Could not load conversation history: {e}")
+    
     # Initialize LLM
     llm = ChatOpenAI(
         model=settings.llm_model,
@@ -92,18 +108,22 @@ def create_deepflow_agent(
     )
     
     # Available tools
+    from .tools import send_telegram_notification
+    
     tools = [
         add_to_queue,
         send_auto_reply,
         update_task_status,
         notify_user_tool,
-        send_browser_notification,
+        send_telegram_notification,  # Primary notification method
+        send_browser_notification,   # Fallback (SSE)
     ]
     
-    # Format system prompt with user context
+    # Format system prompt with user context and history
     system_prompt = AGENT_SYSTEM_PROMPT.format(
         user_id=user_id,
-        user_state=user_state
+        user_state=user_state,
+        conversation_history=conversation_history
     )
     
     # Create the agent using LangChain v1 API

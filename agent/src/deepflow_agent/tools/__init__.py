@@ -9,6 +9,7 @@ from .send_auto_reply import send_auto_reply
 from .update_task_status import update_task_status
 from .notify_user import notify_user_tool
 from .send_browser_notification import send_browser_notification
+from .send_telegram_notification import send_telegram_notification
 
 __all__ = [
     "add_to_queue",
@@ -16,4 +17,6 @@ __all__ = [
     "update_task_status",
     "notify_user_tool",
     "send_browser_notification",
+    "send_telegram_notification",
 ]
+

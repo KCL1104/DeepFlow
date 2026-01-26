@@ -1,0 +1,231 @@
+{
+  "metrics": {
+    "avg_urgency_accuracy": 0.89,
+    "avg_category_match": 0.5,
+    "avg_combined_score": 0.7729999999999999,
+    "total_cases": 20,
+    "failures": 8
+  },
+  "results": [
+    {
+      "case_id": "zh-001",
+      "input_preview": "緊急！系統現在完全掛了，客戶都在抱怨！",
+      "predicted_urgency": 10,
+      "expected_urgency": 10,
+      "predicted_category": "critical",
+      "expected_category": "critical",
+      "urgency_accuracy": 1.0,
+      "category_match": 1.0,
+      "combined_score": 1.0
+    },
+    {
+      "case_id": "zh-002",
+      "input_preview": "有空的時候幫我看一下這個 PR，不急",
+      "predicted_urgency": 4,
+      "expected_urgency": 3,
+      "predicted_category": "low",
+      "expected_category": "low",
+      "urgency_accuracy": 0.9,
+      "category_match": 1.0,
+      "combined_score": 0.9299999999999999
+    },
+    {
+      "case_id": "zh-003",
+      "input_preview": "明天下午三點要開會，請準備季度報告",
+      "predicted_urgency": 5,
+      "expected_urgency": 6,
+      "predicted_category": "standard",
+      "expected_category": "urgent",
+      "urgency_accuracy": 0.9,
+      "category_match": 0.0,
+      "combined_score": 0.63
+    },
+    {
+      "case_id": "zh-004",
+      "input_preview": "週五團隊聚餐，有要參加的請回覆～",
+      "predicted_urgency": 2,
+      "expected_urgency": 2,
+      "predicted_category": "low",
+      "expected_category": "low",
+      "urgency_accuracy": 1.0,
+      "category_match": 1.0,
+      "combined_score": 1.0
+    },
+    {
+      "case_id": "zh-005",
+      "input_preview": "客戶說如果今天不修好 bug 就要取消合約！！！",
+      "predicted_urgency": 9,
+      "expected_urgency": 9,
+      "predicted_category": "urgent",
+      "expected_category": "critical",
+      "urgency_accuracy": 1.0,
+      "category_match": 0.0,
+      "combined_score": 0.7
+    },
+    {
+      "case_id": "zh-006",
+      "input_preview": "新的公司政策已經更新在 Notion 上了，方便時看一下",
+      "predicted_urgency": 3,
+      "expected_urgency": 2,
+      "predicted_category": "low",
+      "expected_category": "low",
+      "urgency_accuracy": 0.9,
+      "category_match": 1.0,
+      "combined_score": 0.9299999999999999
+    },
+    {
+      "case_id": "zh-007",
+      "input_preview": "恭喜！您獲得了免費的 iPhone！點擊領取...",
+      "predicted_urgency": 1,
+      "expected_urgency": 0,
+      "predicted_category": "discard",
+      "expected_category": "discard",
+      "urgency_accuracy": 0.9,
+      "category_match": 1.0,
+      "combined_score": 0.9299999999999999
+    },
+    {
+      "case_id": "zh-008",
+      "input_preview": "老闆剛剛問你那份報告，他五分鐘後要用",
+      "predicted_urgency": 9,
+      "expected_urgency": 10,
+      "predicted_category": "urgent",
+      "expected_category": "critical",
+      "urgency_accuracy": 0.9,
+      "category_match": 0.0,
+      "combined_score": 0.63
+    },
+    {
+      "case_id": "zh-009",
+      "input_preview": "這週的週報記得要交喔",
+      "predicted_urgency": 6,
+      "expected_urgency": 5,
+      "predicted_category": "standard",
+      "expected_category": "standard",
+      "urgency_accuracy": 0.9,
+      "category_match": 1.0,
+      "combined_score": 0.9299999999999999
+    },
+    {
+      "case_id": "zh-010",
+      "input_preview": "伺服器 CPU 使用率超過 90%，可能需要擴容",
+      "predicted_urgency": 5,
+      "expected_urgency": 7,
+      "predicted_category": "standard",
+      "expected_category": "urgent",
+      "urgency_accuracy": 0.8,
+      "category_match": 0.0,
+      "combined_score": 0.5599999999999999
+    },
+    {
+      "case_id": "tool-001",
+      "input_preview": "Server is on fire! All services are down! CEO is p",
+      "predicted_urgency": 10,
+      "expected_urgency": 10,
+      "predicted_category": "critical",
+      "expected_category": "critical",
+      "urgency_accuracy": 1.0,
+      "category_match": 1.0,
+      "combined_score": 1.0
+    },
+    {
+      "case_id": "tool-002",
+      "input_preview": "Hey, just wanted to say hi! How's your day going?",
+      "predicted_urgency": 2,
+      "expected_urgency": 1,
+      "predicted_category": "low",
+      "expected_category": "discard",
+      "urgency_accuracy": 0.9,
+      "category_match": 0.0,
+      "combined_score": 0.63
+    },
+    {
+      "case_id": "tool-003",
+      "input_preview": "Please review the attached proposal by end of day",
+      "predicted_urgency": 6,
+      "expected_urgency": 6,
+      "predicted_category": "standard",
+      "expected_category": "urgent",
+      "urgency_accuracy": 1.0,
+      "category_match": 0.0,
+      "combined_score": 0.7
+    },
+    {
+      "case_id": "tool-004",
+      "input_preview": "The build is failing on main branch, blocking all ",
+      "predicted_urgency": 9,
+      "expected_urgency": 8,
+      "predicted_category": "urgent",
+      "expected_category": "urgent",
+      "urgency_accuracy": 0.9,
+      "category_match": 1.0,
+      "combined_score": 0.9299999999999999
+    },
+    {
+      "case_id": "tool-005",
+      "input_preview": "Your expense report from last month is still pendi",
+      "predicted_urgency": 5,
+      "expected_urgency": 3,
+      "predicted_category": "standard",
+      "expected_category": "low",
+      "urgency_accuracy": 0.8,
+      "category_match": 0.0,
+      "combined_score": 0.5599999999999999
+    },
+    {
+      "case_id": "tool-006",
+      "input_preview": "Meeting in 30 mins with the investor. Don't forget",
+      "predicted_urgency": 5,
+      "expected_urgency": 9,
+      "predicted_category": "standard",
+      "expected_category": "critical",
+      "urgency_accuracy": 0.6,
+      "category_match": 0.0,
+      "combined_score": 0.42
+    },
+    {
+      "case_id": "tool-007",
+      "input_preview": "Can you update the task status for ticket #1234 to",
+      "predicted_urgency": 5,
+      "expected_urgency": 4,
+      "predicted_category": "standard",
+      "expected_category": "standard",
+      "urgency_accuracy": 0.9,
+      "category_match": 1.0,
+      "combined_score": 0.9299999999999999
+    },
+    {
+      "case_id": "tool-008",
+      "input_preview": "Please notify the team that the release is delayed",
+      "predicted_urgency": 7,
+      "expected_urgency": 6,
+      "predicted_category": "urgent",
+      "expected_category": "urgent",
+      "urgency_accuracy": 0.9,
+      "category_match": 1.0,
+      "combined_score": 0.9299999999999999
+    },
+    {
+      "case_id": "mixed-001",
+      "input_preview": "Hi 你好，麻煩幫我處理一下這個問題，today EOD please",
+      "predicted_urgency": 5,
+      "expected_urgency": 6,
+      "predicted_category": "standard",
+      "expected_category": "urgent",
+      "urgency_accuracy": 0.9,
+      "category_match": 0.0,
+      "combined_score": 0.63
+    },
+    {
+      "case_id": "mixed-002",
+      "input_preview": "ASAP 需要你幫忙 review 這個 code，production 上有 bug",
+      "predicted_urgency": 5,
+      "expected_urgency": 8,
+      "predicted_category": "standard",
+      "expected_category": "urgent",
+      "urgency_accuracy": 0.7,
+      "category_match": 0.0,
+      "combined_score": 0.48999999999999994
+    }
+  ]
+}

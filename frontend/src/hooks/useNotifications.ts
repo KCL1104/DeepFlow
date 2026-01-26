@@ -83,7 +83,18 @@ export function useNotifications({
 
     // Show browser notification
     const showNotification = useCallback((data: NotificationData) => {
-        if (!hasPermission) return;
+        // Check permission in real-time, not from state
+        if (typeof window === "undefined" || !("Notification" in window)) {
+            console.warn("[Notifications] Browser doesn't support notifications");
+            return;
+        }
+
+        if (Notification.permission !== "granted") {
+            console.warn("[Notifications] Permission not granted, current:", Notification.permission);
+            return;
+        }
+
+        console.log("[Notifications] Showing notification:", data.title);
 
         const notification = new Notification(data.title, {
             body: data.body,
@@ -107,7 +118,7 @@ export function useNotifications({
         if (data.urgency !== "critical") {
             setTimeout(() => notification.close(), 10000);
         }
-    }, [hasPermission]);
+    }, []);
 
     // Connect to SSE endpoint
     useEffect(() => {
