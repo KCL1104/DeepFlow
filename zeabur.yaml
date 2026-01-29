@@ -1,0 +1,165 @@
+apiVersion: zeabur.com/v1
+kind: Template
+metadata:
+  name: DeepFlow
+spec:
+  description: DeepFlow - Workflow automation with AI agents.
+  variables:
+    # Backend & Agent Shared
+    - key: UPSTASH_REDIS_REST_URL
+      type: STRING
+      name: Upstash Redis URL
+      description: The REST URL for your Upstash Redis instance.
+    - key: UPSTASH_REDIS_REST_TOKEN
+      type: PASSWORD
+      name: Upstash Redis Token
+      description: The REST Token for your Upstash Redis instance.
+    
+    # Supabase (Backend)
+    - key: SUPABASE_URL
+      type: STRING
+      name: Supabase URL
+      description: Your Supabase Project URL.
+    - key: SUPABASE_KEY
+      type: PASSWORD
+      name: Supabase Anon Key
+      description: Your Supabase Anonymous Key.
+    - key: SUPABASE_SERVICE_ROLE_KEY
+      type: PASSWORD
+      name: Supabase Service Role Key
+      description: Your Supabase Service Role Key.
+
+    # AI & Agent (Agent)
+    - key: OPENAI_API_KEY
+      type: PASSWORD
+      name: OpenAI API Key
+      description: API Key for OpenAI.
+    - key: OPENAI_API_BASE
+      type: STRING
+      name: OpenAI API Base
+      description: Base URL for OpenAI API (optional).
+    - key: LLM_MODEL
+      type: STRING
+      name: LLM Model
+      description: Model name to use (e.g., gpt-4o).
+    
+    # Opik (Agent)
+    - key: OPIK_API_KEY
+      type: PASSWORD
+      name: Opik API Key
+      description: API Key for Opik.
+    - key: OPIK_PROJECT_NAME
+      type: STRING
+      name: Opik Project Name
+      description: Opik Project Name.
+    - key: OPIK_WORKSPACE
+      type: STRING
+      name: Opik Workspace
+      description: Opik Workspace.
+    
+    # Telegram (Agent)
+    - key: TELEGRAM_BOT_TOKEN
+      type: PASSWORD
+      name: Telegram Bot Token
+      description: Token for your Telegram Bot.
+    
+    # Domains
+    - key: BACKEND_DOMAIN
+      type: DOMAIN
+      name: Backend Domain
+      description: The domain to assign to the Backend API.
+
+  services:
+    - name: Backend
+      template: GIT
+      spec:
+        source:
+          source: GITHUB
+          repo: 1136691264
+          branch: main
+          rootDirectory: backend
+        dockerfile: Dockerfile
+        ports:
+          - id: http
+            port: 8000
+            type: HTTP
+      domainKey: BACKEND_DOMAIN
+      env:
+        UPSTASH_REDIS_REST_URL:
+          default: ${UPSTASH_REDIS_REST_URL}
+          expose: true
+        UPSTASH_REDIS_REST_TOKEN:
+          default: ${UPSTASH_REDIS_REST_TOKEN}
+          expose: true
+        SUPABASE_URL:
+          default: ${SUPABASE_URL}
+          expose: true
+        SUPABASE_KEY:
+          default: ${SUPABASE_KEY}
+          expose: true
+        SUPABASE_SERVICE_ROLE_KEY:
+          default: ${SUPABASE_SERVICE_ROLE_KEY}
+          expose: true
+
+    - name: Agent
+      template: GIT
+      spec:
+        source:
+          source: GITHUB
+          repo: 1136691264
+          branch: main
+          rootDirectory: agent
+        dockerfile: Dockerfile
+      env:
+        UPSTASH_REDIS_REST_URL:
+          default: ${UPSTASH_REDIS_REST_URL}
+          expose: true
+        UPSTASH_REDIS_REST_TOKEN:
+          default: ${UPSTASH_REDIS_REST_TOKEN}
+          expose: true
+        OPENAI_API_KEY:
+          default: ${OPENAI_API_KEY}
+          expose: true
+        OPENAI_API_BASE:
+          default: ${OPENAI_API_BASE}
+          expose: true
+        LLM_MODEL:
+          default: ${LLM_MODEL}
+          expose: true
+        OPIK_API_KEY:
+          default: ${OPIK_API_KEY}
+          expose: true
+        OPIK_PROJECT_NAME:
+          default: ${OPIK_PROJECT_NAME}
+          expose: true
+        OPIK_WORKSPACE:
+          default: ${OPIK_WORKSPACE}
+          expose: true
+        TELEGRAM_BOT_TOKEN:
+          default: ${TELEGRAM_BOT_TOKEN}
+          expose: true
+
+    - name: Frontend
+      template: GIT
+      spec:
+        source:
+          source: GITHUB
+          repo: 1136691264
+          branch: main
+          rootDirectory: frontend
+        dockerfile: Dockerfile
+        ports:
+          - id: http
+            port: 3000
+            type: HTTP
+        # Frontend API URL binding to Backend Domain
+        env:
+          NEXT_PUBLIC_API_URL:
+            default: https://${BACKEND_DOMAIN}/api/v1
+            expose: true
+          NEXT_PUBLIC_SUPABASE_URL:
+            default: ${SUPABASE_URL}
+            expose: true
+          NEXT_PUBLIC_SUPABASE_ANON_KEY:
+            default: ${SUPABASE_KEY}
+            expose: true
