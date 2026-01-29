@@ -151,7 +151,6 @@ spec:
           repo: 1136691264
           branch: main
           rootDirectory: frontend
-        dockerfile: Dockerfile
         ports:
           - id: http
             port: 3000
