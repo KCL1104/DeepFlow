@@ -68,6 +68,10 @@ spec:
       type: DOMAIN
       name: Backend Domain
       description: The domain to assign to the Backend API.
+    - key: FRONTEND_DOMAIN
+      type: DOMAIN
+      name: Frontend Domain
+      description: The domain to assign to the Frontend App.
 
   services:
     - name: Backend
@@ -152,14 +156,15 @@ spec:
           - id: http
             port: 3000
             type: HTTP
-        # Frontend API URL binding to Backend Domain
-        env:
-          NEXT_PUBLIC_API_URL:
-            default: https://${BACKEND_DOMAIN}/api/v1
-            expose: true
-          NEXT_PUBLIC_SUPABASE_URL:
-            default: ${SUPABASE_URL}
-            expose: true
-          NEXT_PUBLIC_SUPABASE_ANON_KEY:
-            default: ${SUPABASE_KEY}
-            expose: true
+      domainKey: FRONTEND_DOMAIN
+      # Frontend API URL binding to Backend Domain
+      env:
+        NEXT_PUBLIC_API_URL:
+          default: https://${BACKEND_DOMAIN}/api/v1
+          expose: true
+        NEXT_PUBLIC_SUPABASE_URL:
+          default: ${SUPABASE_URL}
+          expose: true
+        NEXT_PUBLIC_SUPABASE_ANON_KEY:
+          default: ${SUPABASE_KEY}
+          expose: true
