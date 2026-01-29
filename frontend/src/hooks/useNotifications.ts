@@ -128,7 +128,8 @@ export function useNotifications({
 
         const connect = () => {
             try {
-                const eventSource = new EventSource(sseUrl);
+                // Hardcoded Dev User for now
+                const eventSource = new EventSource('http://localhost:8000/api/notifications/stream/dev-user-123');
                 eventSourceRef.current = eventSource;
 
                 eventSource.addEventListener("connected", (e) => {

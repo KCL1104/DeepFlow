@@ -1,165 +1,89 @@
 "use client";
 
-import * as React from "react";
-import { User, LogOut, Settings } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { FlowStateSwitcher } from "@/components/flow-state-switcher";
-import { PomodoroTimer } from "@/components/pomodoro-timer";
-import { FocusPlayer, type Task } from "@/components/focus-player";
-import { QueueSidebar } from "@/components/queue-sidebar";
-import { cn } from "@/lib/utils";
-
-// Mock data for demonstration
-const mockTasks: Task[] = [
-    {
-        id: "1",
-        title: "Refactor authentication module",
-        summary: "The authentication module needs to be updated to support OAuth 2.0",
-        suggestedAction: "Review the current implementation and create a migration plan",
-        urgency: 7,
-        estimatedMinutes: 45,
-        status: "in_progress",
-    },
-    {
-        id: "2",
-        title: "Write unit tests for API",
-        urgency: 5,
-        estimatedMinutes: 30,
-        status: "pending",
-    },
-    {
-        id: "3",
-        title: "Update documentation",
-        urgency: 3,
-        estimatedMinutes: 20,
-        status: "pending",
-    },
-    {
-        id: "4",
-        title: "Prepare weekly report",
-        urgency: 4,
-        estimatedMinutes: 15,
-        status: "pending",
-    },
-];
-
-type FlowState = "FLOW" | "SHALLOW" | "IDLE";
+import React from 'react';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { FocusStateDisplay } from '@/components/dashboard/FocusStateDisplay';
+import { TaskQueue } from '@/components/dashboard/TaskQueue';
+import { QuickAddDialog } from '@/components/dashboard/QuickAddDialog';
 
 export default function DashboardPage() {
-    const [flowState, setFlowState] = React.useState<FlowState>("IDLE");
-    const [tasks, setTasks] = React.useState<Task[]>(mockTasks);
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-    const currentTask = tasks.find((t) => t.status === "in_progress") || null;
-
-    const handleComplete = (taskId: string) => {
-        setTasks((prev) =>
-            prev.map((t) =>
-                t.id === taskId
-                    ? { ...t, status: "completed" as const }
-                    : t.status === "pending" && prev.findIndex((x) => x.id === t.id) === prev.findIndex((x) => x.status === "pending")
-                        ? { ...t, status: "in_progress" as const }
-                        : t
-            )
-        );
-    };
-
-    const handleBlocked = (taskId: string) => {
-        setTasks((prev) =>
-            prev.map((t) =>
-                t.id === taskId ? { ...t, status: "blocked" as const } : t
-            )
-        );
-    };
-
-    const handleDefer = (taskId: string) => {
-        setTasks((prev) =>
-            prev.map((t) =>
-                t.id === taskId ? { ...t, status: "deferred" as const } : t
-            )
-        );
-    };
-
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex">
-            {/* Sidebar */}
-            <QueueSidebar tasks={tasks} currentTaskId={currentTask?.id} />
+        <DashboardLayout>
+            <div className="space-y-8">
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col">
-                {/* Header */}
-                <header className="h-14 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between px-6">
-                    {/* Logo */}
-                    <div className="flex items-center gap-2">
-                        <svg
-                            className="w-6 h-6 text-sage-600 dark:text-sage-400"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="M2 12c0-3 2.5-6 6-6 4 0 5 4 8 4 3.5 0 6-3 6-6" />
-                            <path d="M2 20c0-3 2.5-6 6-6 4 0 5 4 8 4 3.5 0 6-3 6-6" />
-                        </svg>
-                        <span className="font-mono font-semibold text-neutral-800 dark:text-neutral-200">
-                            DeepFlow
-                        </span>
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-sage-900 dark:text-sage-50">
+                            Dashboard
+                        </h1>
+                        <p className="text-sage-500 dark:text-sage-400">
+                            Monitor your cognitive load and task flow.
+                        </p>
                     </div>
+                    {/* Quick Actions */}
+                    <div className="flex gap-2">
+                        <QuickAddDialog />
+                    </div>
+                </div>
 
-                    {/* Center: Flow State */}
-                    <FlowStateSwitcher value={flowState} onChange={setFlowState} />
+                {/* Focus State - Main Visualization */}
+                <section>
+                    <FocusStateDisplay initialState="IDLE" />
+                </section>
 
-                    {/* Right: User Menu */}
-                    <div className="flex items-center gap-3">
-                        <ThemeToggle />
+                {/* Two Column Layout for Tasks & Stats */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left: Task Queue (2 cols) */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <TaskQueue />
 
-                        {/* User Dropdown */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className={cn(
-                                    "w-9 h-9 rounded-full flex items-center justify-center",
-                                    "bg-sage-100 dark:bg-sage-900/30",
-                                    "hover:bg-sage-200 dark:hover:bg-sage-900/50",
-                                    "transition-colors"
-                                )}
-                            >
-                                <User className="w-4 h-4 text-sage-700 dark:text-sage-400" />
-                            </button>
-
-                            {isMenuOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-lg py-1 z-50">
-                                    <button className="w-full px-4 py-2 text-left text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-2">
-                                        <Settings className="w-4 h-4" />
-                                        Settings
-                                    </button>
-                                    <button className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center gap-2">
-                                        <LogOut className="w-4 h-4" />
-                                        Sign out
-                                    </button>
-                                </div>
-                            )}
+                        {/* Secondary Queue Placeholder (e.g. Next Up) */}
+                        <div className="p-6 rounded-xl border border-dashed border-sage-300 dark:border-sage-700 flex items-center justify-center text-sage-400">
+                            <span>Calendar / Schedule Integration Coming Soon</span>
                         </div>
                     </div>
-                </header>
 
-                {/* Main Area */}
-                <main className="flex-1 flex flex-col items-center justify-center p-8">
-                    {/* Pomodoro Timer */}
-                    <PomodoroTimer workMinutes={30} breakMinutes={5} className="mb-8" />
+                    {/* Right: Stats (1 col) */}
+                    <div className="lg:col-span-1 space-y-6">
+                        {/* Daily Stats Placeholder */}
+                        <div className="bg-white dark:bg-sage-900/40 rounded-xl border border-sage-200 dark:border-sage-800 p-6">
+                            <h3 className="font-semibold text-sage-900 dark:text-sage-50 mb-4">Daily Focus</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-sage-600 dark:text-sage-400">Deep Work</span>
+                                    <span className="font-medium">2h 15m</span>
+                                </div>
+                                <div className="w-full h-2 bg-sage-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-sage-500 w-[35%]" />
+                                </div>
 
-                    {/* Current Task */}
-                    <FocusPlayer
-                        task={currentTask}
-                        onComplete={handleComplete}
-                        onBlocked={handleBlocked}
-                        onDefer={handleDefer}
-                        className="w-full max-w-lg"
-                    />
-                </main>
+                                <div className="flex justify-between text-sm mt-4">
+                                    <span className="text-sage-600 dark:text-sage-400">Context Switches</span>
+                                    <span className="font-medium">12</span>
+                                </div>
+                                <div className="w-full h-2 bg-sage-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-amber-400 w-[60%]" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Agent Status */}
+                        <div className="bg-sage-900 text-sage-50 rounded-xl p-6 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-sage-800 rounded-full translate-x-10 -translate-y-10" />
+                            <h3 className="font-semibold mb-2 relative z-10">Agent Status</h3>
+                            <p className="text-sm text-sage-300 mb-4 relative z-10">
+                                DeepFlow Sentinel is active and processing signals.
+                            </p>
+                            <div className="flex items-center gap-2 text-xs font-mono bg-black/20 p-2 rounded relative z-10">
+                                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                                Listening for Telegram updates...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </div>
+        </DashboardLayout>
     );
 }

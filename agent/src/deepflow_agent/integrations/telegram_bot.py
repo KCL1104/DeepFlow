@@ -373,21 +373,15 @@ class DeepFlowTelegramBot:
         
         # Import and run agent (lazy import to avoid circular deps)
         try:
-            from deepflow_agent.agents import create_deepflow_agent, process_message
-            
-            # Create agent
-            agent = create_deepflow_agent(
-                user_id=deepflow_user_id,
-                user_state=user_state,
-                verbose=False
-            )
+            from deepflow_agent.agents import process_message
             
             # Process message with agent
             result = await process_message(
-                agent=agent,
-                message=message_text,
                 user_id=deepflow_user_id,
-                user_state=user_state
+                user_state=user_state,
+                message_content=message_text,
+                sender=user.first_name or user.username or str(user.id),
+                source="telegram"
             )
             
             # Get agent's response

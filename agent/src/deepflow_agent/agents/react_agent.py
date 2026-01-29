@@ -13,6 +13,7 @@ from langchain_openai import ChatOpenAI
 
 from ..config import get_settings
 from ..tracer import init_opik
+from .semantic_gateway import create_semantic_gateway
 from ..tools import (
     add_to_queue,
     send_auto_reply,
@@ -108,7 +109,7 @@ def create_deepflow_agent(
     )
     
     # Available tools
-    from .tools import send_telegram_notification
+    from ..tools import send_telegram_notification
     
     tools = [
         add_to_queue,
@@ -162,14 +163,31 @@ async def process_message(
     Returns:
         Dict with agent's actions and final answer
     """
-    # Create agent
+    # Create agents
     agent = create_deepflow_agent(
         user_id=user_id,
         user_state=user_state,
         verbose=verbose
     )
     
-    # Format input message
+    gateway = create_semantic_gateway()
+    
+    # 1. Semantic Analysis
+    from ..models import SemanticGatewayInput
+    
+    if verbose:
+        print(f"Running Semantic Analysis on message from {sender}...")
+        
+    analysis = await gateway.analyze(SemanticGatewayInput(
+        user_state=user_state,
+        sender=sender,
+        content=message_content
+    ))
+    
+    if verbose:
+        print(f"Analysis Result: Urgency={analysis.urgency_score}, Category={analysis.category}")
+    
+    # 2. Format input message with analysis
     input_message = {
         "role": "user",
         "content": f"""New message received:
@@ -180,12 +198,26 @@ Content: {message_content}
 User ID: {user_id}
 User State: {user_state}
 
-Analyze this message and take appropriate action(s)."""
+**Semantic Analysis**:
+- Urgency Score: {analysis.urgency_score}/10
+- Category: {analysis.category}
+- Summary: {analysis.summary}
+- Suggested Action: {analysis.suggested_action}
+- Context Tags: {", ".join(analysis.context_tags)}
+
+Based on this analysis and the User State, execute the appropriate tool actions (add_to_queue, notifications, etc.)."""
     }
     
     # Run agent using LangGraph stream
     final_output = None
     tool_calls = []
+    
+    # Use metadata from analysis to enrich return value
+    enriched_metadata = {
+        "urgency_score": analysis.urgency_score,
+        "category": analysis.category,
+        "summary": analysis.summary
+    }
     
     async for step in agent.astream({"messages": [input_message]}):
         if verbose:
@@ -205,6 +237,7 @@ Analyze this message and take appropriate action(s)."""
         "tool_calls": tool_calls,
         "user_id": user_id,
         "user_state": user_state,
+        "analysis": enriched_metadata
     }
 
 

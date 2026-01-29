@@ -15,6 +15,7 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "python-telegram-bot>=22.5",
     "slack-sdk>=3.39.0",
+    "slack_bolt>=1.18.0",
     "tqdm>=4.67.1",
     "upstash-redis>=1.5.0",
 ]

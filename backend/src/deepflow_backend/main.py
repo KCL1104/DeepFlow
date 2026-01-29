@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .api import state_router, queue_router, tasks_router, pomodoro_router, auth_router, notifications_router
+from .api import state_router, queue_router, tasks_router, pomodoro_router, auth_router, notifications_router, webhooks_router
 
 
 @asynccontextmanager
@@ -48,6 +48,7 @@ app.include_router(queue_router, prefix="/api/v1")
 app.include_router(tasks_router, prefix="/api/v1")
 app.include_router(pomodoro_router, prefix="/api/v1")
 app.include_router(notifications_router, prefix="/api/v1")
+app.include_router(webhooks_router, prefix="/api/v1")
 
 
 @app.get("/")

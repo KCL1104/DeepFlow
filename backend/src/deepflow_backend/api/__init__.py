@@ -6,6 +6,7 @@ from .tasks import router as tasks_router
 from .pomodoro import router as pomodoro_router
 from .auth import router as auth_router
 from .notifications import router as notifications_router
+from .webhooks import router as webhooks_router
 
 __all__ = [
     "state_router",
@@ -14,5 +15,6 @@ __all__ = [
     "pomodoro_router",
     "auth_router",
     "notifications_router",
+    "webhooks_router",
 ]
 
