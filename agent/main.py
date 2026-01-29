@@ -9,9 +9,14 @@ This allows the agent to take actions (like notification) based on urgency.
 import asyncio
 import json
 import logging
+import sys
+import os
 from typing import Optional
 
 from upstash_redis import Redis
+
+# Add src directory to Python path
+sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
 from deepflow_agent.config import get_settings
 from deepflow_agent.agents import process_message, process_message_sync
