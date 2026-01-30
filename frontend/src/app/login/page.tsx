@@ -29,6 +29,8 @@ export default function LoginPage() {
     // Dev Auth Bypass for backwards compatibility testing
     const handleDevLogin = () => {
         if (!devUserId) return
+        // 設定 cookie (middleware 可讀取)
+        document.cookie = `deepflow_dev_token=dev-user-${devUserId}; path=/; max-age=86400`
         localStorage.setItem('deepflow_token', `dev-user-${devUserId}`)
         window.location.href = '/dashboard'
     }
@@ -37,7 +39,7 @@ export default function LoginPage() {
         <div className="flex min-h-screen items-center justify-center bg-stone-50 p-4">
             <div className="w-full max-w-sm space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-stone-100">
                 <div className="text-center">
-                    <h2 className="text-2xl font-semibold text-stone-900">DeepFlow Sentinel</h2>
+                    <h2 className="text-2xl font-semibold text-stone-900">DeepFlow</h2>
                     <p className="mt-2 text-sm text-stone-500">Sign in to access your dashboard</p>
                 </div>
 

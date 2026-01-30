@@ -3,6 +3,16 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+    // Dev bypass 檢查 (在 Supabase 認證之前)
+    const devToken = request.cookies.get('deepflow_dev_token')?.value
+    if (devToken && devToken.startsWith('dev-user-')) {
+        return NextResponse.next({
+            request: {
+                headers: request.headers,
+            },
+        })
+    }
+
     let response = NextResponse.next({
         request: {
             headers: request.headers,
