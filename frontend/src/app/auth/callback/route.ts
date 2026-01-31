@@ -5,7 +5,17 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const error = searchParams.get('error')
+  const error_description = searchParams.get('error_description')
   const next = searchParams.get('next') ?? '/dashboard'
+
+  // 處理 Supabase 返回的錯誤
+  if (error) {
+    console.error('Auth callback error:', error, error_description)
+    return NextResponse.redirect(
+      `${origin}/login?error=${encodeURIComponent(error)}&error_description=${encodeURIComponent(error_description || '')}`
+    )
+  }
 
   if (code) {
     const cookieStore = await cookies()
@@ -25,10 +35,18 @@ export async function GET(request: Request) {
         },
       }
     )
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
+
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!exchangeError) {
       return NextResponse.redirect(`${origin}${next}`)
     }
+
+    console.error('Code exchange error:', exchangeError)
+    return NextResponse.redirect(
+      `${origin}/login?error=code_exchange_failed&error_description=${encodeURIComponent(exchangeError.message)}`
+    )
   }
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`)
+
+  return NextResponse.redirect(`${origin}/login?error=missing_code`)
 }
