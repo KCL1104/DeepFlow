@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+    // 使用環境變數來確保正確的 redirect URL
+    // 這解決了反向代理環境中 request.url 可能返回 localhost 的問題
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+
     // Dev bypass 檢查 (在 Supabase 認證之前)
     const devToken = request.cookies.get('deepflow_dev_token')?.value
     if (devToken && devToken.startsWith('dev-user-')) {
@@ -47,23 +51,24 @@ export async function middleware(request: NextRequest) {
     // Protected routes
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
         if (!user) {
-            // Check for dev bypass in cookies? Middleware can't read localStorage.
-            // But we can check for a specific cookie if we set it.
-            return NextResponse.redirect(new URL('/login', request.url))
+            const loginUrl = siteUrl ? `${siteUrl}/login` : new URL('/login', request.url)
+            return NextResponse.redirect(loginUrl)
         }
     }
 
     // Redirect login to dashboard if already logged in
     if (request.nextUrl.pathname === '/login') {
         if (user) {
-            return NextResponse.redirect(new URL('/dashboard', request.url))
+            const dashboardUrl = siteUrl ? `${siteUrl}/dashboard` : new URL('/dashboard', request.url)
+            return NextResponse.redirect(dashboardUrl)
         }
     }
 
     // Redirect register to dashboard if already logged in
     if (request.nextUrl.pathname === '/register') {
         if (user) {
-            return NextResponse.redirect(new URL('/dashboard', request.url))
+            const dashboardUrl = siteUrl ? `${siteUrl}/dashboard` : new URL('/dashboard', request.url)
+            return NextResponse.redirect(dashboardUrl)
         }
     }
 
@@ -73,3 +78,4 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: ['/dashboard/:path*', '/login', '/register'],
 }
+
