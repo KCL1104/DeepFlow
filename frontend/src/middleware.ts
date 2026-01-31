@@ -60,9 +60,16 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // Redirect register to dashboard if already logged in
+    if (request.nextUrl.pathname === '/register') {
+        if (user) {
+            return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
+    }
+
     return response
 }
 
 export const config = {
-    matcher: ['/dashboard/:path*', '/login'],
+    matcher: ['/dashboard/:path*', '/login', '/register'],
 }
