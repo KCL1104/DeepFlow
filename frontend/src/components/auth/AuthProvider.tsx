@@ -51,11 +51,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const signUp = async (email: string, password: string): Promise<{ error?: Error }> => {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
         const { error } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
+                emailRedirectTo: `${siteUrl}/auth/callback`,
             },
         })
         if (error) {
@@ -65,10 +66,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const signInWithGitHub = async (): Promise<void> => {
+        // 使用環境變數來確保正確的 redirect URL
+        // 這解決了 SSR 環境中 window.location.origin 可能不正確的問題
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'github',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${siteUrl}/auth/callback`,
             },
         })
         if (error) throw error
