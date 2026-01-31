@@ -74,7 +74,7 @@ export function PomodoroTimer({
     return (
         <div className={cn("flex flex-col items-center", className)}>
             {/* Timer Status */}
-            <div className="mb-4 text-sm font-mono text-neutral-500 dark:text-neutral-400">
+            <div className="mb-4 text-sm font-mono text-sage-500 dark:text-sage-400">
                 {timerState === "idle" && "Ready to focus"}
                 {timerState === "work" && `Work: ${formatTime(timeLeft)} / ${workMinutes}:00`}
                 {timerState === "break" && `Break: ${formatTime(timeLeft)} / ${breakMinutes}:00`}
@@ -90,7 +90,7 @@ export function PomodoroTimer({
                         r="90"
                         fill="none"
                         strokeWidth="4"
-                        className="stroke-neutral-200 dark:stroke-neutral-700"
+                        className="stroke-sage-200 dark:stroke-sage-700"
                     />
                     {/* Progress circle */}
                     <circle
@@ -115,7 +115,7 @@ export function PomodoroTimer({
 
                 {/* Timer Display */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="font-mono text-4xl font-light text-neutral-800 dark:text-neutral-200">
+                    <span className="font-mono text-4xl font-light text-sage-800 dark:text-sage-200">
                         {formatTime(timeLeft)}
                     </span>
                 </div>
@@ -140,8 +140,8 @@ export function PomodoroTimer({
                         onClick={handlePause}
                         className={cn(
                             "w-10 h-10 rounded-full flex items-center justify-center",
-                            "bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600",
-                            "text-neutral-700 dark:text-neutral-300 transition-colors"
+                            "bg-sage-200 hover:bg-sage-300 dark:bg-sage-700 dark:hover:bg-sage-600",
+                            "text-sage-700 dark:text-sage-300 transition-colors"
                         )}
                         aria-label="Pause timer"
                     >
@@ -152,9 +152,9 @@ export function PomodoroTimer({
                     onClick={handleReset}
                     className={cn(
                         "w-10 h-10 rounded-full flex items-center justify-center",
-                        "border border-neutral-200 dark:border-neutral-700",
-                        "hover:bg-neutral-100 dark:hover:bg-neutral-800",
-                        "text-neutral-600 dark:text-neutral-400 transition-colors"
+                        "border border-sage-200 dark:border-sage-700",
+                        "hover:bg-sage-100 dark:hover:bg-sage-800",
+                        "text-sage-600 dark:text-sage-400 transition-colors"
                     )}
                     aria-label="Reset timer"
                 >

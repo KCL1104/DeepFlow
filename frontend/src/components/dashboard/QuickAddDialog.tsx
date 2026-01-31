@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Loader2, Plus, X } from 'lucide-react';
-import { api } from '@/lib/api';
+import { Loader2, Plus, X, Sparkles } from 'lucide-react';
 
 export function QuickAddDialog() {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,15 +12,6 @@ export function QuickAddDialog() {
 
         setIsSubmitting(true);
         try {
-            await fetch('/api/webhooks/simulate', { // Accessing via next.js proxy if set up, or direct URL?
-                // Wait, we need to use the api client logic or direct fetch. 
-                // The api.ts doesn't have a method for simulate. 
-                // Let's use the full URL from environment or relative if proxy.
-                // Actually, let's look at api.ts again. It uses NEXT_PUBLIC_API_URL.
-            })
-
-            // Re-using fetchClient or raw fetch?
-            // Let's use a simpler approach directly calling the backend url
             const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
             const res = await fetch(`${API_URL}/webhooks/simulate`, {
@@ -32,7 +22,7 @@ export function QuickAddDialog() {
                 body: JSON.stringify({
                     source: 'manual',
                     content: content,
-                    sender: 'user', // Default sender
+                    sender: 'user',
                     metadata: {
                         is_quick_add: true
                     }
@@ -43,8 +33,6 @@ export function QuickAddDialog() {
 
             setContent('');
             setIsOpen(false);
-            // Optionally trigger a refresh of the queue? 
-            // The TaskQueue component polls every 5s, so it should appear automatically.
         } catch (error) {
             console.error('Failed to submit quick add:', error);
             alert('Failed to send task. Check console.');
@@ -57,53 +45,61 @@ export function QuickAddDialog() {
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-sage-800 text-white rounded-lg text-sm font-medium hover:bg-sage-700 transition-colors shadow-sm"
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-sage-600 to-sage-500 text-white rounded-xl text-sm font-semibold hover:from-sage-500 hover:to-sage-400 transition-all shadow-lg shadow-sage-500/20 hover:shadow-sage-500/30"
             >
-                <Plus size={16} />
+                <Plus size={18} />
                 Quick Add
             </button>
         );
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-sage-900 w-full max-w-md rounded-xl shadow-2xl border border-sage-200 dark:border-sage-800 overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className="flex items-center justify-between p-4 border-b border-sage-100 dark:border-sage-800">
-                    <h3 className="font-semibold text-sage-900 dark:text-sage-50">Quick Add Task</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-sage-900 w-full max-w-md rounded-2xl shadow-2xl border border-sage-200 dark:border-sage-700/50 overflow-hidden opacity-0 animate-fade-in">
+                {/* Header */}
+                <div className="flex items-center justify-between p-5 border-b border-sage-100 dark:border-sage-800 bg-sage-50/50 dark:bg-sage-800/30">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sage-500 to-sage-600 flex items-center justify-center">
+                            <Sparkles size={16} className="text-white" />
+                        </div>
+                        <h3 className="font-semibold text-sage-900 dark:text-sage-50">Quick Add Task</h3>
+                    </div>
                     <button
                         onClick={() => setIsOpen(false)}
-                        className="text-sage-400 hover:text-sage-600 dark:hover:text-sage-200 transition-colors"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-sage-400 hover:text-sage-600 dark:hover:text-sage-200 hover:bg-sage-100 dark:hover:bg-sage-800 transition-all"
                     >
-                        <X size={20} />
+                        <X size={18} />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-4 space-y-4">
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-5 space-y-5">
                     <div>
-                        <label className="block text-xs font-medium text-sage-500 mb-1">
+                        <label className="block text-xs font-medium text-sage-500 dark:text-sage-400 mb-2 uppercase tracking-wide">
                             What needs attention?
                         </label>
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="e.g. Critical bug in production, Client meeting at 3pm..."
-                            className="w-full min-h-[100px] p-3 rounded-lg border border-sage-200 dark:border-sage-700 bg-sage-50 dark:bg-sage-900/50 text-sage-900 dark:text-sage-100 focus:outline-none focus:ring-2 focus:ring-sage-500/20 resize-none text-sm"
+                            className="w-full min-h-[120px] p-4 rounded-xl border border-sage-200 dark:border-sage-700 bg-sage-50/50 dark:bg-sage-800/30 text-sage-900 dark:text-sage-100 placeholder:text-sage-400 dark:placeholder:text-sage-500 focus:outline-none focus:border-sage-500 dark:focus:border-sage-400 focus:ring-2 focus:ring-sage-500/20 resize-none text-sm transition-all"
                             autoFocus
                         />
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-2">
+                    {/* Actions */}
+                    <div className="flex justify-end gap-3 pt-2">
                         <button
                             type="button"
                             onClick={() => setIsOpen(false)}
-                            className="px-4 py-2 text-sm font-medium text-sage-600 hover:bg-sage-100 dark:text-sage-300 dark:hover:bg-sage-800 rounded-lg transition-colors"
+                            className="px-5 py-2.5 text-sm font-medium text-sage-600 hover:bg-sage-100 dark:text-sage-300 dark:hover:bg-sage-800 rounded-xl transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting || !content.trim()}
-                            className="flex items-center gap-2 px-4 py-2 bg-sage-800 text-white rounded-lg text-sm font-medium hover:bg-sage-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sage-600 to-sage-500 text-white rounded-xl text-sm font-semibold hover:from-sage-500 hover:to-sage-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-sage-500/20"
                         >
                             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                             Send to Agent
@@ -114,3 +110,4 @@ export function QuickAddDialog() {
         </div>
     );
 }
+

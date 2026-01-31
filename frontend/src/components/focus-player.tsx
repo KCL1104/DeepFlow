@@ -34,15 +34,15 @@ export function FocusPlayer({
             <div
                 className={cn(
                     "flex flex-col items-center justify-center p-12",
-                    "border border-dashed border-neutral-300 dark:border-neutral-700",
-                    "rounded-2xl bg-neutral-50 dark:bg-neutral-900",
+                    "border border-dashed border-sage-300 dark:border-sage-700",
+                    "rounded-2xl bg-sage-50 dark:bg-sage-900/50",
                     className
                 )}
             >
-                <div className="text-neutral-400 dark:text-neutral-500 text-lg font-mono">
+                <div className="text-sage-400 dark:text-sage-500 text-lg font-medium">
                     No tasks in queue
                 </div>
-                <p className="text-sm text-neutral-400 dark:text-neutral-600 mt-2">
+                <p className="text-sm text-sage-400 dark:text-sage-600 mt-2">
                     Enjoy your focus time ✨
                 </p>
             </div>
@@ -53,19 +53,19 @@ export function FocusPlayer({
         <div
             className={cn(
                 "flex flex-col p-8",
-                "border border-neutral-200 dark:border-neutral-800",
-                "rounded-2xl bg-white dark:bg-neutral-900",
+                "border border-sage-200 dark:border-sage-800",
+                "rounded-2xl bg-white dark:bg-sage-900/50",
                 className
             )}
         >
             {/* Task Title */}
-            <h2 className="font-mono text-2xl font-medium text-neutral-800 dark:text-neutral-100 text-center">
+            <h2 className="text-2xl font-semibold text-sage-800 dark:text-sage-100 text-center">
                 {task.title}
             </h2>
 
             {/* Summary */}
             {task.summary && (
-                <p className="mt-4 text-neutral-600 dark:text-neutral-400 text-center max-w-md mx-auto">
+                <p className="mt-4 text-sage-600 dark:text-sage-400 text-center max-w-md mx-auto">
                     {task.summary}
                 </p>
             )}
@@ -81,7 +81,7 @@ export function FocusPlayer({
 
             {/* Meta Info */}
             {task.estimatedMinutes && (
-                <div className="mt-4 flex items-center justify-center gap-1 text-sm text-neutral-500 dark:text-neutral-400">
+                <div className="mt-4 flex items-center justify-center gap-1 text-sm text-sage-500 dark:text-sage-400">
                     <Clock className="w-4 h-4" />
                     <span>~{task.estimatedMinutes} min</span>
                 </div>
@@ -118,10 +118,10 @@ export function FocusPlayer({
                 <button
                     onClick={() => onDefer?.(task.id)}
                     className={cn(
-                        "flex items-center gap-2 px-5 py-2.5 rounded-lg",
-                        "border border-neutral-300 dark:border-neutral-700",
-                        "hover:bg-neutral-100 dark:hover:bg-neutral-800",
-                        "text-neutral-700 dark:text-neutral-300 font-medium text-sm",
+                        "flex items-center gap-2 px-5 py-2.5 rounded-xl",
+                        "border border-sage-300 dark:border-sage-700",
+                        "hover:bg-sage-100 dark:hover:bg-sage-800",
+                        "text-sage-700 dark:text-sage-300 font-medium text-sm",
                         "transition-colors"
                     )}
                 >

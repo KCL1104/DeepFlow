@@ -1,52 +1,83 @@
 @import "tailwindcss";
 
+/* ===== Verdant Calm Design System ===== */
+/* Natural productivity aesthetic with improved contrast */
+
 /* Light theme (default) */
 :root {
-  --background: #fafafa;
-  --foreground: #2d2d2d;
+  --background: #f8faf8;
+  --background-subtle: #f0f4f0;
+  --foreground: #1a2e1a;
+  --foreground-muted: #4a5d4a;
 
-  /* Sage Green Palette */
-  --sage-50: #f6f7f6;
-  --sage-100: #e3e7e3;
-  --sage-200: #c7d0c7;
-  --sage-300: #a3b2a3;
-  --sage-400: #7a8f7a;
-  --sage-500: #5a7d5a;
-  --sage-600: #4a6b4a;
-  --sage-700: #3d573d;
-  --sage-800: #344834;
-  --sage-900: #2d3d2d;
+  /* Sage Green Palette - Light Mode */
+  --sage-50: #f6f9f6;
+  --sage-100: #e8efe8;
+  --sage-200: #d1dfd1;
+  --sage-300: #a8c4a8;
+  --sage-400: #7aa67a;
+  --sage-500: #5a8a5a;
+  --sage-600: #4a7a4a;
+  --sage-700: #3d5f3d;
+  --sage-800: #344d34;
+  --sage-900: #2a3d2a;
+  --sage-950: #1a2e1a;
 
-  /* Amber Palette */
+  /* Accent Colors */
+  --amber-300: #fcd34d;
   --amber-400: #fbbf24;
-  --amber-500: #d4a574;
-  --amber-600: #c4956a;
+  --amber-500: #f59e0b;
+  
+  /* Surface Colors */
+  --surface-primary: #ffffff;
+  --surface-secondary: rgba(90, 138, 90, 0.05);
+  --surface-elevated: #ffffff;
+  
+  /* Border Colors */
+  --border-subtle: rgba(90, 138, 90, 0.12);
+  --border-default: rgba(90, 138, 90, 0.2);
 }
 
-/* Dark theme - triggered by .dark class from next-themes */
+/* Dark theme - Verdant Calm */
 .dark {
-  --background: #1e1e1e;
-  --foreground: #e0e0e0;
+  --background: #0d1a12;
+  --background-subtle: #132218;
+  --foreground: #e8efe8;
+  --foreground-muted: #a3b5a3;
 
-  --sage-50: #1a2e1a;
-  --sage-100: #243524;
-  --sage-200: #2d3d2d;
-  --sage-300: #3d573d;
-  --sage-400: #8fbc8f;
-  --sage-500: #6b8e6b;
-  --sage-600: #5a7d5a;
-  --sage-700: #4a6b4a;
-  --sage-800: #8fbc8f;
-  --sage-900: #c7d0c7;
+  /* Sage Green Palette - Dark Mode (improved contrast) */
+  --sage-50: #e8efe8;
+  --sage-100: #d1dfd1;
+  --sage-200: #a8c4a8;
+  --sage-300: #7aa67a;
+  --sage-400: #5a8a5a;
+  --sage-500: #4a7a4a;
+  --sage-600: #3d6d3d;
+  --sage-700: #2d4d2d;
+  --sage-800: #1f361f;
+  --sage-900: #132218;
+  --sage-950: #0d1a12;
 
-  --amber-400: #e8b86d;
-  --amber-500: #c9a05a;
-  --amber-600: #b8904a;
+  /* Accent Colors - warmer in dark mode */
+  --amber-300: #fcd34d;
+  --amber-400: #f59e0b;
+  --amber-500: #d97706;
+  
+  /* Surface Colors - subtle glass effect */
+  --surface-primary: rgba(255, 255, 255, 0.03);
+  --surface-secondary: rgba(255, 255, 255, 0.02);
+  --surface-elevated: rgba(255, 255, 255, 0.05);
+  
+  /* Border Colors */
+  --border-subtle: rgba(168, 196, 168, 0.08);
+  --border-default: rgba(168, 196, 168, 0.15);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-subtle: var(--background-subtle);
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
@@ -61,6 +92,16 @@
   --color-sage-700: var(--sage-700);
   --color-sage-800: var(--sage-800);
   --color-sage-900: var(--sage-900);
+  --color-sage-950: var(--sage-950);
+  
+  /* Surface colors */
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-elevated: var(--surface-elevated);
+  
+  /* Border colors */
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
 }
 
 body {
@@ -69,19 +110,73 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Custom animations */
+/* Grain texture overlay for dark mode depth */
+.dark body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+  z-index: 9999;
+}
+
+/* ===== Custom Animations ===== */
+
+/* Soft pulse for status indicators */
 @keyframes pulse-soft {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .animate-pulse-soft {
   animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* Gentle glow for focus state */
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(122, 166, 122, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(122, 166, 122, 0.4); }
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+/* Stagger delay utilities */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* ===== Glass Card Styles ===== */
+.glass-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+}
+
+.dark .glass-card {
+  background: var(--surface-elevated);
+  border-color: var(--border-default);
+}
+
+/* ===== Focus Ring Styles ===== */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--sage-400);
+  outline-offset: 2px;
 }
