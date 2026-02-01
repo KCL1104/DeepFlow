@@ -82,5 +82,7 @@ export const api = {
     },
     queue: {
         get: () => fetchClient<QueueResponse>('/queue'),
+        history: (limit: number = 20, offset: number = 0) =>
+            fetchClient<Task[]>(`/queue/history?limit=${limit}&offset=${offset}`),
     },
 };

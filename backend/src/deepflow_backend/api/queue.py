@@ -222,3 +222,43 @@ async def get_current_task(
         priority_score=0,
         created_at=t["created_at"],
     )
+
+
+@router.get("/history", response_model=List[TaskResponse])
+async def get_task_history(
+    user: CurrentUser,
+    limit: int = 20,
+    offset: int = 0,
+):
+    """Get completed tasks history."""
+    supabase = get_supabase_client()
+
+    result = (
+        supabase.table("tasks")
+        .select("*")
+        .eq("user_id", user["id"])
+        .eq("status", "completed")
+        .order("completed_at", desc=True)
+        .range(offset, offset + limit - 1)
+        .execute()
+    )
+
+    tasks = []
+    for t in result.data:
+        tasks.append(
+            TaskResponse(
+                id=t["id"],
+                title=t["title"],
+                summary=t.get("summary"),
+                suggested_action=t.get("suggested_action"),
+                urgency=t.get("urgency", 5),
+                estimated_minutes=t.get("estimated_minutes"),
+                status=TaskStatus.COMPLETED,
+                priority_score=0,
+                created_at=t["created_at"],
+                completed_at=t.get("completed_at"),
+            )
+        )
+
+    return tasks
+

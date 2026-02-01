@@ -1,0 +1,2128 @@
+[
+    {
+        "id": "email-critical-001",
+        "input": {
+            "content": "Our production database server has crashed and all services are affected. The ops team is investigating but we need all hands on deck immediately. Customer-facing applications are returning 500 errors.",
+            "subject": "Production DB Down - Immediate Action Required",
+            "sender": "ops-alerts@company.com",
+            "sender_name": "Ops Alert System",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Production database crash affecting all services"
+        },
+        "metadata": {
+            "scenario": "production_incident",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-critical-002",
+        "input": {
+            "content": "Your AWS account charges have exceeded the $10,000 threshold. Current month-to-date charges: $12,456.78. This is significantly higher than your usual spending pattern. Please review your resources immediately to prevent unexpected costs.",
+            "subject": "AWS Billing Alert: $10,000 threshold exceeded",
+            "sender": "no-reply@aws.amazon.com",
+            "sender_name": "AWS Billing",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "AWS billing spike detected, costs exceeded threshold"
+        },
+        "metadata": {
+            "scenario": "production_incident",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-critical-003",
+        "input": {
+            "content": "The SSL certificate for api.company.com expires on 2024-01-16 (tomorrow). Please renew immediately to avoid service disruption. Affected domains: api.company.com, dashboard.company.com",
+            "subject": "SSL Certificate Expires Tomorrow",
+            "sender": "ssl-monitor@company.com",
+            "sender_name": "SSL Monitor",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "SSL certificate expiring tomorrow, renewal needed"
+        },
+        "metadata": {
+            "scenario": "production_incident",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-critical-004",
+        "input": {
+            "content": "All API endpoints are returning HTTP 500 errors. Error rate: 100%. Duration: 15 minutes and counting. Last successful request: 14:32 UTC. Immediate investigation required.",
+            "subject": "[CRITICAL] All API endpoints returning 500",
+            "sender": "pagerduty@company.com",
+            "sender_name": "PagerDuty",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Complete API outage, all endpoints returning 500"
+        },
+        "metadata": {
+            "scenario": "production_incident",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-critical-005",
+        "input": {
+            "content": "系統完全無法連線已經超過 30 分鐘了！所有服務都掛了，客戶一直打電話來抱怨。請立即查看！",
+            "subject": "緊急！系統完全無法連線",
+            "sender": "support@company.com",
+            "sender_name": "客服團隊",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Complete system outage with customer complaints"
+        },
+        "metadata": {
+            "scenario": "production_incident",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-critical-006",
+        "input": {
+            "content": "資料庫自動備份作業已連續三天失敗。最後一次成功備份時間：2024-01-12 02:00 AM。失敗原因：磁碟空間不足。請盡快處理以確保資料安全。",
+            "subject": "資料庫備份失敗警告",
+            "sender": "backup-system@company.com",
+            "sender_name": "備份系統",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Database backup failed for 3 consecutive days"
+        },
+        "metadata": {
+            "scenario": "production_incident",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-critical-007",
+        "input": {
+            "content": "Production cluster 有嚴重問題，好幾個 pods 一直 CrashLoopBackOff。目前影響到 payment service 和 notification service。Logs 顯示是 OOM killed，需要趕快處理。",
+            "subject": "K8s cluster 有問題，pods 一直 crash",
+            "sender": "devops@company.com",
+            "sender_name": "DevOps Team",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Kubernetes pods crashing due to OOM in production"
+        },
+        "metadata": {
+            "scenario": "production_incident",
+            "language": "mixed",
+            "difficulty": "medium"
+        }
+    },
+    {
+        "id": "email-customer-001",
+        "input": {
+            "content": "Our largest enterprise client, Acme Corp, just called and they're threatening to terminate their $500K annual contract if we don't resolve their data sync issues by end of day. This is our biggest account - we cannot lose them.",
+            "subject": "URGENT: Major client threatening to cancel",
+            "sender": "sales-director@company.com",
+            "sender_name": "Sarah Johnson",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Major enterprise client threatening contract termination"
+        },
+        "metadata": {
+            "scenario": "customer_issue",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-customer-002",
+        "input": {
+            "content": "Payment processing error for VIP customer GlobalTech Inc. Transaction ID: TXN-78234. Amount: $45,000. Error: Card declined - insufficient funds. Customer claims they have sufficient balance. Please investigate immediately.",
+            "subject": "Customer payment failed - Transaction declined",
+            "sender": "billing@company.com",
+            "sender_name": "Billing System",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "VIP customer payment processing failure"
+        },
+        "metadata": {
+            "scenario": "customer_issue",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-customer-003",
+        "input": {
+            "content": "I'm escalating this to the executive team. Fortune 500 account MegaCorp has been experiencing intermittent outages for the past 3 days. Their CTO is personally involved now and demanding a resolution. We need our best engineers on this.",
+            "subject": "Escalation: Fortune 500 account issue",
+            "sender": "account-manager@company.com",
+            "sender_name": "Michael Chen",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": true,
+            "is_reply": true,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Fortune 500 account escalation to executive level"
+        },
+        "metadata": {
+            "scenario": "customer_issue",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-customer-004",
+        "input": {
+            "content": "Reminder: We have a product demo scheduled with TechStart Inc. today at 3 PM. They've reported issues with the dashboard loading slowly. Can we please ensure everything is working smoothly before the demo?",
+            "subject": "Client demo scheduled for today - Issues reported",
+            "sender": "sales@company.com",
+            "sender_name": "Emily Wong",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Client demo today with reported performance issues"
+        },
+        "metadata": {
+            "scenario": "customer_issue",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-customer-005",
+        "input": {
+            "content": "大客戶王先生剛剛打電話來說，如果今天下班前不把報表功能修好，他們就要取消明年的合約續約。這個客戶每年貢獻 200 萬營收，請務必優先處理！",
+            "subject": "客戶說如果今天不解決就要取消合約",
+            "sender": "sales@company.com",
+            "sender_name": "業務部",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Major client threatening contract cancellation today"
+        },
+        "metadata": {
+            "scenario": "customer_issue",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-customer-006",
+        "input": {
+            "content": "緊急通知：VIP 客戶台積電的付款交易失敗，金額為 NT$1,500,000。系統顯示信用卡授權失敗，但客戶表示額度充足。請立即調查並回覆客戶。",
+            "subject": "VIP 客戶付款失敗，請緊急處理",
+            "sender": "finance@company.com",
+            "sender_name": "財務部",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "VIP customer payment failure requiring immediate investigation"
+        },
+        "metadata": {
+            "scenario": "customer_issue",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-customer-007",
+        "input": {
+            "content": "Hi team, 剛收到客戶 feedback，他們說我們的 API response time 太慢了，average 要 3 秒以上。他們是 enterprise tier 的客戶，SLA 要求是 500ms 以內。可以幫忙看一下嗎？",
+            "subject": "客戶 feedback: API response time 太慢",
+            "sender": "support@company.com",
+            "sender_name": "Support Team",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Enterprise customer reporting API performance below SLA"
+        },
+        "metadata": {
+            "scenario": "customer_issue",
+            "language": "mixed",
+            "difficulty": "medium"
+        }
+    },
+    {
+        "id": "email-exec-001",
+        "input": {
+            "content": "I need the quarterly revenue report for the board meeting that starts in 2 hours. Please include year-over-year comparisons and projections for Q2. This is top priority.",
+            "subject": "CEO Request: Quarterly report needed in 2 hours",
+            "sender": "ceo@company.com",
+            "sender_name": "John Smith (CEO)",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "CEO needs quarterly report for board meeting in 2 hours"
+        },
+        "metadata": {
+            "scenario": "executive_request",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-exec-002",
+        "input": {
+            "content": "Emergency board meeting has been rescheduled to TODAY at 4pm due to the acquisition news. All department heads must attend with updated numbers. Please drop everything and prepare.",
+            "subject": "Board meeting rescheduled to TODAY 4pm",
+            "sender": "board-secretary@company.com",
+            "sender_name": "Board Secretary",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": true,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Emergency board meeting rescheduled to today"
+        },
+        "metadata": {
+            "scenario": "executive_request",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-exec-003",
+        "input": {
+            "content": "Please send me the budget breakdown for the engineering department ASAP. We're reviewing cost allocations before the investor call tomorrow. Need it within the next hour if possible.",
+            "subject": "CFO requesting budget review ASAP",
+            "sender": "cfo@company.com",
+            "sender_name": "Lisa Park (CFO)",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "CFO needs budget breakdown within an hour"
+        },
+        "metadata": {
+            "scenario": "executive_request",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-exec-004",
+        "input": {
+            "content": "We have a meeting with Sequoia Capital tomorrow morning. They want to see the product demo and latest metrics dashboard. Please ensure the staging environment is ready and all features are working.",
+            "subject": "Investor meeting tomorrow - Demo prep required",
+            "sender": "ceo@company.com",
+            "sender_name": "John Smith (CEO)",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Investor demo tomorrow, prep needed"
+        },
+        "metadata": {
+            "scenario": "executive_request",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-exec-005",
+        "input": {
+            "content": "老闆說他五分鐘後要進會議室跟投資人報告，需要你手上那份最新的用戶成長數據。請馬上準備好發給他！",
+            "subject": "老闆五分鐘後要你的報告",
+            "sender": "assistant@company.com",
+            "sender_name": "CEO 助理",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 10,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "CEO needs report in 5 minutes for investor meeting"
+        },
+        "metadata": {
+            "scenario": "executive_request",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-exec-006",
+        "input": {
+            "content": "明天早上十點有投資人來公司參觀，需要準備產品 demo。請確保展示環境正常運作，並準備好最新的功能介紹。",
+            "subject": "投資人會議需要準備 demo",
+            "sender": "ceo@company.com",
+            "sender_name": "執行長",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Investor visit tomorrow, demo preparation required"
+        },
+        "metadata": {
+            "scenario": "executive_request",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-exec-007",
+        "input": {
+            "content": "Hey, CTO 剛剛跟我說這個 user authentication feature 一定要 EOD 完成，因為明天要給 investor demo。請 prioritize 這個 task，有任何 blocker 馬上跟我說。",
+            "subject": "CTO 說這個 feature 要 EOD 完成",
+            "sender": "pm@company.com",
+            "sender_name": "Product Manager",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "CTO mandated feature completion by end of day"
+        },
+        "metadata": {
+            "scenario": "executive_request",
+            "language": "mixed",
+            "difficulty": "medium"
+        }
+    },
+    {
+        "id": "email-meeting-001",
+        "input": {
+            "content": "Your meeting 'Q1 Planning Session' starts in 5 minutes. Join link: https://zoom.us/j/123456789. Attendees: Engineering Team, Product, Design.",
+            "subject": "Meeting starts in 5 minutes - Please join",
+            "sender": "calendar@company.com",
+            "sender_name": "Google Calendar",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Meeting starting in 5 minutes"
+        },
+        "metadata": {
+            "scenario": "meeting",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-meeting-002",
+        "input": {
+            "content": "Reminder: Daily standup at 10:00 AM in the usual Zoom room. Please have your updates ready. Duration: 15 minutes.",
+            "subject": "Weekly standup reminder - 10:00 AM",
+            "sender": "calendar@company.com",
+            "sender_name": "Calendar Reminder",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Daily standup reminder"
+        },
+        "metadata": {
+            "scenario": "meeting",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-meeting-003",
+        "input": {
+            "content": "You've been invited to 'Project Alpha Sync' on Tuesday, January 23rd at 2:00 PM. Location: Conference Room B. Organizer: David Lee. Please RSVP.",
+            "subject": "Calendar Invite: Project sync next Tuesday",
+            "sender": "david.lee@company.com",
+            "sender_name": "David Lee",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": true,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Future meeting invitation for next week"
+        },
+        "metadata": {
+            "scenario": "meeting",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-meeting-004",
+        "input": {
+            "content": "The product roadmap meeting originally scheduled for Wednesday has been moved to Friday 2pm. Same Zoom link applies. Sorry for any inconvenience.",
+            "subject": "Meeting reschedule: Moved to Friday 2pm",
+            "sender": "pm@company.com",
+            "sender_name": "Product Manager",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Meeting rescheduled to Friday"
+        },
+        "metadata": {
+            "scenario": "meeting",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-meeting-005",
+        "input": {
+            "content": "提醒：明天下午兩點的季度檢討會議需要各部門準備投影片。請在今天下班前將資料上傳到共享資料夾。",
+            "subject": "明天會議需要準備資料",
+            "sender": "admin@company.com",
+            "sender_name": "行政部",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Meeting prep required by end of day for tomorrow"
+        },
+        "metadata": {
+            "scenario": "meeting",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-meeting-006",
+        "input": {
+            "content": "通知：原訂下週一的 Sprint Planning 會議改到下週三同一時間。會議室不變，請更新你的行事曆。",
+            "subject": "Sprint planning 會議改期通知",
+            "sender": "scrum-master@company.com",
+            "sender_name": "Scrum Master",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Sprint planning meeting rescheduled"
+        },
+        "metadata": {
+            "scenario": "meeting",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-meeting-007",
+        "input": {
+            "content": "Hi team, 下午三點的 sync meeting 我有另一個 urgent call，可以 reschedule 到四點嗎？如果大家 ok 的話我會更新 calendar invite。",
+            "subject": "下午的 sync meeting 要 reschedule",
+            "sender": "colleague@company.com",
+            "sender_name": "Alex Wang",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Request to reschedule afternoon meeting"
+        },
+        "metadata": {
+            "scenario": "meeting",
+            "language": "mixed",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-code-001",
+        "input": {
+            "content": "Your pull request #456 'Add user authentication module' has been approved by 2 reviewers. You can now merge this PR. CI checks: All passed.",
+            "subject": "[GitHub] Your pull request has been approved",
+            "sender": "notifications@github.com",
+            "sender_name": "GitHub",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Pull request approved and ready to merge"
+        },
+        "metadata": {
+            "scenario": "code_review",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-code-002",
+        "input": {
+            "content": "Dependabot has detected a critical security vulnerability in lodash (CVE-2021-23337). Severity: High. Affected versions: < 4.17.21. Recommendation: Update to lodash@4.17.21 immediately.",
+            "subject": "[GitHub] Dependabot: Critical security vulnerability",
+            "sender": "notifications@github.com",
+            "sender_name": "GitHub Dependabot",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Critical security vulnerability detected in dependency"
+        },
+        "metadata": {
+            "scenario": "code_review",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-code-003",
+        "input": {
+            "content": "CI Build #1234 failed on branch 'main'. Failed jobs: test-integration, deploy-staging. Error: Connection timeout to database. This is blocking all deployments.",
+            "subject": "CI Build Failed on main branch",
+            "sender": "ci@company.com",
+            "sender_name": "GitHub Actions",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "CI build failed on main, blocking deployments"
+        },
+        "metadata": {
+            "scenario": "code_review",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-code-004",
+        "input": {
+            "content": "@alice commented on your pull request #234: 'Great work! Just one small suggestion - could we add a unit test for the edge case when the input is null?'",
+            "subject": "[GitHub] New comment on your PR #234",
+            "sender": "notifications@github.com",
+            "sender_name": "GitHub",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "New comment on pull request"
+        },
+        "metadata": {
+            "scenario": "code_review",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-code-005",
+        "input": {
+            "content": "Hey, when you have some time, could you take a look at my refactoring PR? It's not blocking anything, just wanted to get your thoughts on the new architecture. No rush at all.",
+            "subject": "Code review request - when you have time",
+            "sender": "colleague@company.com",
+            "sender_name": "Bob Chen",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Non-urgent code review request"
+        },
+        "metadata": {
+            "scenario": "code_review",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-code-006",
+        "input": {
+            "content": "CI pipeline 掛了，是 linting error。修好之後才能 deploy 到 staging。錯誤訊息：ESLint found 3 errors in src/components/Header.tsx。",
+            "subject": "CI 失敗了，需要修復才能 deploy",
+            "sender": "ci@company.com",
+            "sender_name": "CI System",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "CI failure blocking staging deployment"
+        },
+        "metadata": {
+            "scenario": "code_review",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-code-007",
+        "input": {
+            "content": "Hey 有空的話幫我 review 一下這個 PR，主要是 refactor 了一些 utility functions。No rush，when you have time 就好～",
+            "subject": "幫忙 review 一下這個 PR，no rush",
+            "sender": "colleague@company.com",
+            "sender_name": "Kevin Liu",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Casual PR review request, no urgency"
+        },
+        "metadata": {
+            "scenario": "code_review",
+            "language": "mixed",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-admin-001",
+        "input": {
+            "content": "This is a friendly reminder that expense reports for November are due this Friday. Please submit all receipts through the expense portal. Late submissions may delay reimbursement.",
+            "subject": "Reminder: Submit your expense report by Friday",
+            "sender": "finance@company.com",
+            "sender_name": "Finance Team",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Expense report deadline reminder"
+        },
+        "metadata": {
+            "scenario": "administrative",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-admin-002",
+        "input": {
+            "content": "Please review the updated remote work policy effective February 1st. Key changes include flexible work hours and updated equipment allowance. Full policy document attached.",
+            "subject": "Policy Update: New remote work guidelines",
+            "sender": "hr@company.com",
+            "sender_name": "Human Resources",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": true,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "FYI policy update for future reference"
+        },
+        "metadata": {
+            "scenario": "administrative",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-admin-003",
+        "input": {
+            "content": "Scheduled maintenance will occur tonight from 11 PM to 2 AM PST. During this time, internal tools including email, Slack, and JIRA may be temporarily unavailable. Please save your work.",
+            "subject": "IT Maintenance: System downtime tonight 11pm",
+            "sender": "it@company.com",
+            "sender_name": "IT Department",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Planned maintenance notice for tonight"
+        },
+        "metadata": {
+            "scenario": "administrative",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-admin-004",
+        "input": {
+            "content": "Your domain company.com is set to expire in 3 days. Please renew immediately to avoid service interruption. Auto-renewal failed due to expired payment method.",
+            "subject": "Your domain expires in 3 days - Renew now",
+            "sender": "support@namecheap.com",
+            "sender_name": "Namecheap",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Domain expiration warning, action needed"
+        },
+        "metadata": {
+            "scenario": "administrative",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-admin-005",
+        "input": {
+            "content": "提醒：本週五是工時表提交截止日。請確保在下午五點前完成填報，以免影響薪資計算。",
+            "subject": "本週請記得填寫工時表",
+            "sender": "hr@company.com",
+            "sender_name": "人資部",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Timesheet submission deadline reminder"
+        },
+        "metadata": {
+            "scenario": "administrative",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-admin-006",
+        "input": {
+            "content": "您有 5 天的年假將於本月底到期。根據公司政策，未使用的年假將不會延續至下一年度。請及早規劃休假。",
+            "subject": "年假即將到期提醒",
+            "sender": "hr@company.com",
+            "sender_name": "人資系統",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "PTO expiration notice"
+        },
+        "metadata": {
+            "scenario": "administrative",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-admin-007",
+        "input": {
+            "content": "Hi，HR 提醒這週五是 performance review 的 deadline。Manager 跟 peer feedback 都要完成，系統會在週五晚上 lock 掉。",
+            "subject": "HR 說 performance review 要完成了",
+            "sender": "hr@company.com",
+            "sender_name": "HR Team",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Performance review deadline this Friday"
+        },
+        "metadata": {
+            "scenario": "administrative",
+            "language": "mixed",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-social-001",
+        "input": {
+            "content": "Wishing you a wonderful birthday! Hope you have a fantastic day filled with joy and celebration. The team sends their best wishes! 🎂🎉",
+            "subject": "Happy Birthday! 🎂",
+            "sender": "team@company.com",
+            "sender_name": "The Team",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Birthday greeting from team"
+        },
+        "metadata": {
+            "scenario": "social",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-social-002",
+        "input": {
+            "content": "We're organizing a team lunch tomorrow at 12:30 PM at the new Italian place downtown. Please reply to let us know if you can make it. Hope to see everyone there!",
+            "subject": "Team lunch tomorrow - Please RSVP",
+            "sender": "team-lead@company.com",
+            "sender_name": "Sarah",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Team lunch invitation for tomorrow"
+        },
+        "metadata": {
+            "scenario": "social",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-social-003",
+        "input": {
+            "content": "Hey! I'd love to grab coffee with you next week to chat about your career journey and get some advice. Would you have 30 minutes sometime? Totally flexible on timing.",
+            "subject": "Coffee chat invitation next week",
+            "sender": "colleague@company.com",
+            "sender_name": "Junior Dev",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Casual coffee chat request"
+        },
+        "metadata": {
+            "scenario": "social",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-social-004",
+        "input": {
+            "content": "Just wanted to say great job on the presentation yesterday! Your demo was really impressive and the client was clearly engaged. Keep up the excellent work!",
+            "subject": "Great job on the presentation!",
+            "sender": "manager@company.com",
+            "sender_name": "Your Manager",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Appreciation message from manager"
+        },
+        "metadata": {
+            "scenario": "social",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-social-005",
+        "input": {
+            "content": "週五晚上團隊想約個聚餐慶祝專案上線，地點還在討論中。有興趣的話回覆這封信讓我們知道人數～",
+            "subject": "週五團隊聚餐，要參加嗎？",
+            "sender": "team@company.com",
+            "sender_name": "團隊",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Team dinner invitation for Friday"
+        },
+        "metadata": {
+            "scenario": "social",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-social-006",
+        "input": {
+            "content": "祝您新年快樂！願新的一年萬事如意，工作順利，身體健康！感謝過去一年的合作與支持。",
+            "subject": "節日快樂！",
+            "sender": "ceo@company.com",
+            "sender_name": "執行長",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Holiday greeting from CEO"
+        },
+        "metadata": {
+            "scenario": "social",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-social-007",
+        "input": {
+            "content": "Happy Friday everyone！這禮拜辛苦了，下班後要不要去附近的 bar 喝一杯慶祝 sprint 結束？Anyone interested 可以回信 or 在 slack 說一聲～",
+            "subject": "Happy Friday！下班後要不要去喝一杯？",
+            "sender": "colleague@company.com",
+            "sender_name": "Team Member",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "After-work social invitation"
+        },
+        "metadata": {
+            "scenario": "social",
+            "language": "mixed",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-spam-001",
+        "input": {
+            "content": "This week's productivity tips: 1. Use the Pomodoro technique 2. Batch similar tasks 3. Take regular breaks 4. Minimize notifications... Click here to read more and boost your productivity!",
+            "subject": "Weekly Newsletter: 10 productivity tips",
+            "sender": "newsletter@productivityhub.com",
+            "sender_name": "ProductivityHub",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Marketing newsletter"
+        },
+        "metadata": {
+            "scenario": "spam_promotional",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-spam-002",
+        "input": {
+            "content": "Join industry leaders at our exclusive webinar: 'The Future of AI in Enterprise'. Learn how top companies are leveraging AI to transform their business. Register now - limited spots available!",
+            "subject": "Join our webinar: The Future of AI",
+            "sender": "marketing@techconference.com",
+            "sender_name": "TechConference",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Promotional webinar invitation"
+        },
+        "metadata": {
+            "scenario": "spam_promotional",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-spam-003",
+        "input": {
+            "content": "For a limited time, get 50% off our Enterprise plan! That's a savings of $5,000/year. Use code SAVE50 at checkout. Offer expires in 48 hours. Don't miss out!",
+            "subject": "Exclusive offer: 50% off enterprise plan",
+            "sender": "sales@saascompany.com",
+            "sender_name": "SaaSCompany",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Sales promotional email"
+        },
+        "metadata": {
+            "scenario": "spam_promotional",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-spam-004",
+        "input": {
+            "content": "We'd love your feedback! Take our 2-minute survey about your recent experience with our product. As a thank you, you'll be entered to win a $100 Amazon gift card.",
+            "subject": "Survey: Help us improve our product",
+            "sender": "feedback@vendor.com",
+            "sender_name": "Vendor Feedback",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Survey request email"
+        },
+        "metadata": {
+            "scenario": "spam_promotional",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-spam-005",
+        "input": {
+            "content": "恭喜您！您已被選中獲得免費的 iPhone 15 Pro！請點擊以下連結領取您的獎品。此優惠僅限今日有效！！！",
+            "subject": "恭喜！您獲得了免費的 iPhone！",
+            "sender": "winner@fakepromo.com",
+            "sender_name": "Prize Center",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 0,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": [],
+            "expected_summary": "Obvious scam/spam email"
+        },
+        "metadata": {
+            "scenario": "spam_promotional",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-spam-006",
+        "input": {
+            "content": "雙11限時促銷！全場商品買一送一，滿千再折百！最後三天，錯過再等一年！點擊立即選購！",
+            "subject": "限時促銷：買一送一",
+            "sender": "promo@shopping.com",
+            "sender_name": "購物網",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 1,
+            "category": "discard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Promotional shopping email"
+        },
+        "metadata": {
+            "scenario": "spam_promotional",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-security-001",
+        "input": {
+            "content": "We detected a sign-in to your account from a new device in Moscow, Russia at 3:42 AM UTC. If this wasn't you, please secure your account immediately by resetting your password.",
+            "subject": "Security Alert: Suspicious login detected",
+            "sender": "security@company.com",
+            "sender_name": "Security Team",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Suspicious login from unknown location"
+        },
+        "metadata": {
+            "scenario": "security",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-security-002",
+        "input": {
+            "content": "Your credit card ending in 4532 was charged $500.00 at FOREIGN MERCHANT on Jan 15. If you did not authorize this transaction, please contact us immediately to dispute the charge.",
+            "subject": "Your credit card was charged $500 - Verify?",
+            "sender": "alerts@bank.com",
+            "sender_name": "Bank Alerts",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Unexpected credit card charge alert"
+        },
+        "metadata": {
+            "scenario": "security",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-security-003",
+        "input": {
+            "content": "Your password will expire in 24 hours. Please update your password to maintain access to company systems. Click here to change your password now.",
+            "subject": "Password expiring in 24 hours",
+            "sender": "it-security@company.com",
+            "sender_name": "IT Security",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Password expiration warning"
+        },
+        "metadata": {
+            "scenario": "security",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-security-004",
+        "input": {
+            "content": "您的帳號因為多次登入失敗已被暫時鎖定。如果這不是您本人的操作，請立即聯繫 IT 部門進行身份驗證並重設密碼。",
+            "subject": "帳號被鎖定，請驗證身份",
+            "sender": "security@company.com",
+            "sender_name": "資安團隊",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Account locked due to failed login attempts"
+        },
+        "metadata": {
+            "scenario": "security",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-security-005",
+        "input": {
+            "content": "GitHub Dependabot 在你的 repo myapp/backend 偵測到一個 high severity security vulnerability。Package: jsonwebtoken < 9.0.0 有 CVE-2022-23529 漏洞。建議馬上 upgrade。",
+            "subject": "GitHub 偵測到你的 repo 有 security vulnerability",
+            "sender": "notifications@github.com",
+            "sender_name": "GitHub Security",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "High severity security vulnerability in repository"
+        },
+        "metadata": {
+            "scenario": "security",
+            "language": "mixed",
+            "difficulty": "medium"
+        }
+    },
+    {
+        "id": "email-app-001",
+        "input": {
+            "content": "You were mentioned by @ops-lead in #production-alerts: '@oncall We're seeing 5xx errors spike on the payment service. Can you check the logs?'",
+            "subject": "[Slack] @mention in #production-alerts",
+            "sender": "notifications@slack.com",
+            "sender_name": "Slack",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Direct mention in production alerts channel"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-002",
+        "input": {
+            "content": "New message in #general from Sarah: 'Anyone want to grab lunch today? There's a new ramen place that opened nearby.'",
+            "subject": "[Slack] New message in #general",
+            "sender": "notifications@slack.com",
+            "sender_name": "Slack",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "General channel casual message"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-003",
+        "input": {
+            "content": "PROJ-1234 'Implement user dashboard' has been assigned to you by David Lee. Priority: Medium. Due date: January 25, 2024. Click to view the full ticket.",
+            "subject": "[Jira] PROJ-1234 assigned to you",
+            "sender": "jira@company.atlassian.net",
+            "sender_name": "Jira",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "New Jira ticket assignment"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-004",
+        "input": {
+            "content": "PROJ-5678 'API Integration' status changed from 'In Progress' to 'Blocked'. Blocker: Waiting for third-party API credentials. This ticket is blocking 3 other tickets.",
+            "subject": "[Jira] PROJ-5678 status changed to Blocked",
+            "sender": "jira@company.atlassian.net",
+            "sender_name": "Jira",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Jira ticket blocked, affecting other tickets"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-005",
+        "input": {
+            "content": "Alice commented on 'Q4 Planning': 'Can we add a section about the infrastructure upgrades? I think it's important for the budget discussion.'",
+            "subject": "[Notion] Comment on \"Q4 Planning\"",
+            "sender": "notifications@notion.so",
+            "sender_name": "Notion",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Comment on Notion document"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-006",
+        "input": {
+            "content": "New issue opened by customer-support: #123 'Production bug: Users unable to complete checkout'. Labels: bug, production, high-priority. Assignees: none.",
+            "subject": "[GitHub] New issue #123: Production bug",
+            "sender": "notifications@github.com",
+            "sender_name": "GitHub",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 6,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "New high-priority production bug reported"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "en",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-007",
+        "input": {
+            "content": "@kevin.liu 在 #dev-team 頻道提到你：『這個 API 設計你比較熟，可以幫忙看一下嗎？』",
+            "subject": "[Slack] 有人在 #dev-team 提到你",
+            "sender": "notifications@slack.com",
+            "sender_name": "Slack",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 5,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Slack mention asking for help"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-008",
+        "input": {
+            "content": "PROD-999「用戶登入異常」優先級已從 P2 調整為 P0。變更原因：影響範圍擴大，目前已有 500+ 用戶回報無法登入。",
+            "subject": "[Jira] PROD-999 優先級改為 P0",
+            "sender": "jira@company.atlassian.net",
+            "sender_name": "Jira",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 8,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "Jira ticket escalated to P0 priority"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-009",
+        "input": {
+            "content": "你已被 PM 加入「2024 Q1 產品規格」頁面。這是一份共享文件，你現在可以查看和編輯此頁面。",
+            "subject": "[Notion] 你被加入了「產品規格」頁面",
+            "sender": "notifications@notion.so",
+            "sender_name": "Notion",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 2,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Added to shared Notion page"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "zh",
+            "difficulty": "easy"
+        }
+    },
+    {
+        "id": "email-app-010",
+        "input": {
+            "content": "@here in #urgent-issues: Payment processing 全部 fail 了！剛收到 Stripe webhook 說他們有 incident。所有 transactions 都在 queue 裡面 pending。需要立即處理！",
+            "subject": "[Slack] @here in #urgent-issues - 需要立即處理",
+            "sender": "notifications@slack.com",
+            "sender_name": "Slack",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 9,
+            "category": "critical",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue",
+                "send_browser_notification"
+            ],
+            "expected_summary": "@here mention about payment processing failure"
+        },
+        "metadata": {
+            "scenario": "app_notification",
+            "language": "mixed",
+            "difficulty": "medium"
+        }
+    },
+    {
+        "id": "email-edge-001",
+        "input": {
+            "content": "---------- Forwarded message ----------\nFrom: Bob\nSubject: Re: Re: Re: FW: About the Q3 report\n\nHey, just following up on this thread from last month. Did we ever resolve the discrepancy in the numbers?",
+            "subject": "Re: Re: Re: FW: Old thread revival",
+            "sender": "bob@company.com",
+            "sender_name": "Bob",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": true,
+            "is_forwarded": true
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Old email thread follow-up"
+        },
+        "metadata": {
+            "scenario": "edge_case",
+            "language": "en",
+            "difficulty": "medium"
+        }
+    },
+    {
+        "id": "email-edge-002",
+        "input": {
+            "content": "Please review the attached document and let me know your thoughts. The deadline is tomorrow.",
+            "subject": "[No Subject]",
+            "sender": "unknown@company.com",
+            "sender_name": "Unknown Sender",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": true,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Document review with tomorrow deadline, no subject"
+        },
+        "metadata": {
+            "scenario": "edge_case",
+            "language": "en",
+            "difficulty": "medium"
+        }
+    },
+    {
+        "id": "email-edge-003",
+        "input": {
+            "content": "有空的話看一下這個，不急。（但其實老闆在等這個報告，他下午要用）",
+            "subject": "有空再看 (但其實很急)",
+            "sender": "colleague@company.com",
+            "sender_name": "同事",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 7,
+            "category": "urgent",
+            "should_interrupt": true,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Misleadingly casual but actually urgent request"
+        },
+        "metadata": {
+            "scenario": "edge_case",
+            "language": "zh",
+            "difficulty": "hard"
+        }
+    },
+    {
+        "id": "email-edge-004",
+        "input": {
+            "content": "緊急！！！超級緊急！！！馬上看！！！\n\n...其實就是想問你週末要不要一起打球。",
+            "subject": "緊急！！！（其實不緊急）",
+            "sender": "friend@company.com",
+            "sender_name": "朋友",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": false,
+            "is_reply": false,
+            "is_forwarded": false
+        },
+        "expected": {
+            "urgency_score": 3,
+            "category": "low",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "False urgency, actually social invitation"
+        },
+        "metadata": {
+            "scenario": "edge_case",
+            "language": "zh",
+            "difficulty": "hard"
+        }
+    },
+    {
+        "id": "email-edge-005",
+        "input": {
+            "content": "FW: Re: 關於上次 meeting 的 follow up...\n\n--- Original Message ---\nHi team, 上次討論的 architecture changes 我整理了一個 doc，請大家 review 一下。Deadline 是這週五，有任何 concerns 請讓我知道。",
+            "subject": "FW: Re: 關於上次 meeting 的 follow up...",
+            "sender": "pm@company.com",
+            "sender_name": "PM",
+            "source": "email",
+            "user_state": "FLOW",
+            "has_attachments": true,
+            "is_reply": true,
+            "is_forwarded": true
+        },
+        "expected": {
+            "urgency_score": 4,
+            "category": "standard",
+            "should_interrupt": false,
+            "expected_tools": [
+                "add_to_queue"
+            ],
+            "expected_summary": "Forwarded meeting follow-up with Friday deadline"
+        },
+        "metadata": {
+            "scenario": "edge_case",
+            "language": "mixed",
+            "difficulty": "medium"
+        }
+    }
+]

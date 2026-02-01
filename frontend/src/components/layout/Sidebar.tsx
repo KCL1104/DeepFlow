@@ -13,7 +13,7 @@ interface SidebarProps {
 const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Task Queue', href: '/dashboard/tasks', icon: ListTodo },
-    { name: 'History', href: '/dashboard/history', icon: History },
+    { name: 'History', href: '/history', icon: History },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
