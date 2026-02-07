@@ -91,7 +91,7 @@ spec:
         SUPABASE_URL:
           default: ${SUPABASE_URL}
           expose: true
-        SUPABASE_KEY:
+        SUPABASE_ANON_KEY:
           default: ${SUPABASE_KEY}
           expose: true
         SUPABASE_SERVICE_ROLE_KEY:
