@@ -7,6 +7,7 @@ from .pomodoro import router as pomodoro_router
 from .auth import router as auth_router
 from .notifications import router as notifications_router
 from .webhooks import router as webhooks_router
+from .stats import router as stats_router
 
 __all__ = [
     "state_router",
@@ -16,5 +17,6 @@ __all__ = [
     "auth_router",
     "notifications_router",
     "webhooks_router",
+    "stats_router",
 ]
 

@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 import os
 os.environ.setdefault("SUPABASE_URL", "https://mock.supabase.co")
 os.environ.setdefault("SUPABASE_ANON_KEY", "mock-anon-key")
-os.environ.setdefault("UPSTASH_REDIS_URL", "redis://localhost:6379")
+os.environ.setdefault("REDIS_URL", "redis://localhost:6379")
 
 from deepflow_backend.main import app
 

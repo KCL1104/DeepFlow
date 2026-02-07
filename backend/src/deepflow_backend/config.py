@@ -25,12 +25,8 @@ class Settings(BaseSettings):
     supabase_anon_key: str = ""
     supabase_service_role_key: str = ""
 
-    # Upstash Redis (connection URL for standard Redis)
-    upstash_redis_url: str = "redis://localhost:6379"
-    
-    # Upstash Redis REST API (for SSE pub/sub)
-    upstash_redis_rest_url: str = ""
-    upstash_redis_rest_token: str = ""
+    # Redis connection URL
+    redis_url: str = "redis://localhost:6379"
 
     # JWT
     jwt_secret: str = "dev-secret-change-in-production"
@@ -49,9 +45,9 @@ class Settings(BaseSettings):
         return bool(self.supabase_url and self.supabase_anon_key)
 
     @property
-    def is_redis_rest_configured(self) -> bool:
-        """Check if Redis REST API is configured for SSE."""
-        return bool(self.upstash_redis_rest_url and self.upstash_redis_rest_token)
+    def is_redis_configured(self) -> bool:
+        """Check if Redis is configured."""
+        return bool(self.redis_url)
 
 
 @lru_cache

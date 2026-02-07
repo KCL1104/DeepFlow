@@ -71,6 +71,14 @@ export interface QueueResponse {
     total_count: number;
 }
 
+export interface DailyStats {
+    deep_work_minutes: number;
+    context_switches: number;
+    tasks_completed: number;
+    tasks_intercepted: number;
+    flow_sessions: number;
+}
+
 export const api = {
     state: {
         get: () => fetchClient<StateResponse>('/state'),
@@ -84,5 +92,8 @@ export const api = {
         get: () => fetchClient<QueueResponse>('/queue'),
         history: (limit: number = 20, offset: number = 0) =>
             fetchClient<Task[]>(`/queue/history?limit=${limit}&offset=${offset}`),
+    },
+    stats: {
+        daily: () => fetchClient<DailyStats>('/stats/daily'),
     },
 };

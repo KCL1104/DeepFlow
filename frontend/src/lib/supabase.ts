@@ -1,16 +1,33 @@
 import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-// 移除 fallback，確保建置時必須有正確的環境變數
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+// Lazy initialization to avoid build-time errors
+// Environment variables are only available at runtime on Zeabur
+let supabaseInstance: SupabaseClient | null = null
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
-  )
+export function getSupabase(): SupabaseClient {
+  if (supabaseInstance) {
+    return supabaseInstance
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error(
+      'Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+    )
+  }
+
+  supabaseInstance = createBrowserClient(supabaseUrl, supabaseAnonKey)
+  return supabaseInstance
 }
 
-// 使用 @supabase/ssr 的 createBrowserClient
-// 這確保 PKCE code verifier 儲存在 cookies 中，而非 localStorage
-// 讓 server-side (middleware, auth callback) 可以正確讀取
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+// For backward compatibility - exports a getter that initializes on first access
+// Note: This will throw at runtime if env vars are missing, not at build time
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_, prop) {
+    return (getSupabase() as any)[prop]
+  },
+})
+

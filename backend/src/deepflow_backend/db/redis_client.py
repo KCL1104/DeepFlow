@@ -1,8 +1,7 @@
 """
 Redis Client Module
 
-Provides async Redis client for state storage and priority queue.
-Uses Upstash Redis (serverless).
+Provides Redis client for state storage and priority queue.
 """
 
 from functools import lru_cache
@@ -18,7 +17,7 @@ from ..config import get_settings
 def get_redis_client() -> redis.Redis:
     """Get cached Redis client."""
     settings = get_settings()
-    return redis.from_url(settings.upstash_redis_url, decode_responses=True)
+    return redis.from_url(settings.redis_url, decode_responses=True)
 
 
 class UserStateManager:

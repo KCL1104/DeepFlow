@@ -31,9 +31,8 @@ class Settings(BaseSettings):
     opik_project_name: str = "DeepFlow"
     opik_workspace: str = "default"
 
-    # Upstash Redis (REST API)
-    upstash_redis_rest_url: str = ""
-    upstash_redis_rest_token: str = ""
+    # Redis connection URL
+    redis_url: str = "redis://localhost:6379"
 
     # Slack Integration
     slack_bot_token: str = ""
@@ -59,7 +58,7 @@ class Settings(BaseSettings):
 
     @property
     def is_redis_configured(self) -> bool:
-        return bool(self.upstash_redis_rest_url and self.upstash_redis_rest_token)
+        return bool(self.redis_url)
 
     @property
     def is_slack_configured(self) -> bool:

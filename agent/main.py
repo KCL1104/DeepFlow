@@ -13,7 +13,7 @@ import sys
 import os
 from typing import Optional
 
-from upstash_redis import Redis
+import redis
 
 # Add src directory to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
@@ -29,7 +29,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger("deepflow-agent")
 
-async def process_signal(redis: Redis, signal_data: str):
+
+async def process_signal(redis_client: redis.Redis, signal_data: str):
     """
     Process a single signal from the queue using ReAct Agent.
     """
@@ -48,7 +49,7 @@ async def process_signal(redis: Redis, signal_data: str):
         content = data.get("content", "")
         sender = data.get("sender", "Unknown")
         metadata = data.get("metadata", {})
-        
+
         logger.info(f"⚡ Processing signal from {source_str}: {source_id}")
 
         # 1. Determine Target User
@@ -56,11 +57,11 @@ async def process_signal(redis: Redis, signal_data: str):
         # Ideally, we should have a mapping (e.g., email -> user_id).
         # Here we default to "default_user" if not provided, assuming the user will link this ID.
         user_id = metadata.get("user_id", "default_user")
-        
+
         # 2. Get User State
         # We need to know if the user is in FLOW to make the right decision.
         state_key = f"user:{user_id}:state"
-        user_state = redis.get(state_key) or "IDLE"
+        user_state = redis_client.get(state_key) or "IDLE"
 
         logger.info(f"   Context: User={user_id}, State={user_state}")
 
@@ -83,57 +84,58 @@ async def process_signal(redis: Redis, signal_data: str):
             sender="System_Signal_Ingestion",
             source=source_str,
             source_id=str(source_id),
-            verbose=True # Helpful for debugging logs
+            verbose=True  # Helpful for debugging logs
         )
-        
-        logger.info(f"🤖 Agent Action Complete.")
+
+        logger.info("🤖 Agent Action Complete.")
         if result.get("tool_calls"):
             logger.info(f"   Tools used: {len(result['tool_calls'])}")
-        
+
     except Exception as e:
         logger.error(f"Error processing signal: {e}", exc_info=True)
+
 
 async def worker_loop():
     """
     Main worker loop.
     """
     settings = get_settings()
-    
+
     # Check Config
     if not settings.is_redis_configured:
-        logger.error("❌ Redis is not configured. Set UPSTASH_REDIS_REST_URL/TOKEN.")
+        logger.error("❌ Redis is not configured. Set REDIS_URL.")
         return
     if not settings.is_llm_configured:
         logger.error("❌ LLM is not configured. Set OPENAI_API_KEY.")
         return
 
     logger.info("🛡️  DeepFlow Sentinel Agent (Unified Brain) Starting...")
-    
+
     try:
-        redis = Redis(
-            url=settings.upstash_redis_rest_url,
-            token=settings.upstash_redis_rest_token
-        )
+        redis_client = redis.from_url(settings.redis_url, decode_responses=True)
+        # Test connection
+        redis_client.ping()
     except Exception as e:
         logger.error(f"Failed to connect to Redis: {e}")
         return
 
     queue_key = "deepflow:signals:pending"
     logger.info(f"👀 Watching queue: {queue_key}")
-    
+
     while True:
         try:
             # Poll Redis (LPOP)
-            item = redis.lpop(queue_key)
-            
+            item = redis_client.lpop(queue_key)
+
             if item:
-                await process_signal(redis, item)
+                await process_signal(redis_client, item)
             else:
                 await asyncio.sleep(1)
-                
+
         except Exception as e:
             logger.error(f"Worker loop encountered error: {e}")
             await asyncio.sleep(5)
+
 
 def main():
     try:
@@ -141,5 +143,7 @@ def main():
     except KeyboardInterrupt:
         logger.info("👋 Agent shutting down...")
 
+
 if __name__ == "__main__":
     main()
+

@@ -1,13 +1,46 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { FocusStateDisplay } from '@/components/dashboard/FocusStateDisplay';
 import { TaskQueue } from '@/components/dashboard/TaskQueue';
 import { QuickAddDialog } from '@/components/dashboard/QuickAddDialog';
 import { Calendar, TrendingUp, Activity } from 'lucide-react';
+import { api, DailyStats } from '@/lib/api';
 
 export default function DashboardPage() {
+    const [stats, setStats] = useState<DailyStats | null>(null);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const data = await api.stats.daily();
+                setStats(data);
+            } catch (error) {
+                console.error('Failed to fetch stats:', error);
+            }
+        };
+
+        fetchStats();
+        const interval = setInterval(fetchStats, 30000); // Refresh every 30s
+        return () => clearInterval(interval);
+    }, []);
+
+    // Format minutes to hours and minutes
+    const formatTime = (minutes: number) => {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0) {
+            return `${hours}h ${mins}m`;
+        }
+        return `${mins}m`;
+    };
+
+    // Calculate progress percentage (target: 4 hours = 240 min deep work)
+    const deepWorkProgress = stats ? Math.min(100, (stats.deep_work_minutes / 240) * 100) : 0;
+    // Context switches: lower is better, show inverse (target: less than 20)
+    const switchesProgress = stats ? Math.min(100, (stats.context_switches / 20) * 100) : 0;
+
     return (
         <DashboardLayout>
             <div className="space-y-8">
@@ -58,20 +91,39 @@ export default function DashboardPage() {
                                 <div>
                                     <div className="flex justify-between text-sm mb-2">
                                         <span className="text-sage-600 dark:text-sage-400">Deep Work</span>
-                                        <span className="font-semibold text-sage-800 dark:text-sage-200">2h 15m</span>
+                                        <span className="font-semibold text-sage-800 dark:text-sage-200">
+                                            {stats ? formatTime(stats.deep_work_minutes) : '—'}
+                                        </span>
                                     </div>
                                     <div className="w-full h-2.5 bg-sage-100 dark:bg-sage-800/50 rounded-full overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-sage-500 to-sage-400 w-[35%] rounded-full" />
+                                        <div
+                                            className="h-full bg-gradient-to-r from-sage-500 to-sage-400 rounded-full transition-all duration-500"
+                                            style={{ width: `${deepWorkProgress}%` }}
+                                        />
                                     </div>
                                 </div>
 
                                 <div>
                                     <div className="flex justify-between text-sm mb-2">
                                         <span className="text-sage-600 dark:text-sage-400">Context Switches</span>
-                                        <span className="font-semibold text-sage-800 dark:text-sage-200">12</span>
+                                        <span className="font-semibold text-sage-800 dark:text-sage-200">
+                                            {stats?.context_switches ?? '—'}
+                                        </span>
                                     </div>
                                     <div className="w-full h-2.5 bg-sage-100 dark:bg-sage-800/50 rounded-full overflow-hidden">
-                                        <div className="h-full bg-gradient-to-r from-amber-400 to-amber-300 w-[60%] rounded-full" />
+                                        <div
+                                            className="h-full bg-gradient-to-r from-amber-400 to-amber-300 rounded-full transition-all duration-500"
+                                            style={{ width: `${switchesProgress}%` }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="pt-3 border-t border-sage-100 dark:border-sage-800">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-sage-600 dark:text-sage-400">Tasks Completed</span>
+                                        <span className="font-semibold text-sage-800 dark:text-sage-200">
+                                            {stats?.tasks_completed ?? '—'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -107,4 +159,5 @@ export default function DashboardPage() {
         </DashboardLayout>
     );
 }
+
 

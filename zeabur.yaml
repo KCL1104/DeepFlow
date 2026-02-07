@@ -6,14 +6,10 @@ spec:
   description: DeepFlow - Workflow automation with AI agents.
   variables:
     # Backend & Agent Shared
-    - key: UPSTASH_REDIS_REST_URL
+    - key: REDIS_URL
       type: STRING
-      name: Upstash Redis URL
-      description: The REST URL for your Upstash Redis instance.
-    - key: UPSTASH_REDIS_REST_TOKEN
-      type: PASSWORD
-      name: Upstash Redis Token
-      description: The REST Token for your Upstash Redis instance.
+      name: Redis URL
+      description: Redis connection URL (e.g., redis://:password@host:port).
     
     # Supabase (Backend)
     - key: SUPABASE_URL
@@ -89,11 +85,8 @@ spec:
             type: HTTP
       domainKey: BACKEND_DOMAIN
       env:
-        UPSTASH_REDIS_REST_URL:
-          default: ${UPSTASH_REDIS_REST_URL}
-          expose: true
-        UPSTASH_REDIS_REST_TOKEN:
-          default: ${UPSTASH_REDIS_REST_TOKEN}
+        REDIS_URL:
+          default: ${REDIS_URL}
           expose: true
         SUPABASE_URL:
           default: ${SUPABASE_URL}
@@ -115,11 +108,8 @@ spec:
           rootDirectory: agent
 
       env:
-        UPSTASH_REDIS_REST_URL:
-          default: ${UPSTASH_REDIS_REST_URL}
-          expose: true
-        UPSTASH_REDIS_REST_TOKEN:
-          default: ${UPSTASH_REDIS_REST_TOKEN}
+        REDIS_URL:
+          default: ${REDIS_URL}
           expose: true
         OPENAI_API_KEY:
           default: ${OPENAI_API_KEY}
@@ -170,3 +160,4 @@ spec:
         NEXT_PUBLIC_SITE_URL:
           default: https://${FRONTEND_DOMAIN}
           expose: true
+
