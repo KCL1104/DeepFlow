@@ -3,7 +3,11 @@ kind: Template
 metadata:
   name: DeepFlow
 spec:
-  description: DeepFlow - Workflow automation with AI agents.
+  description: DeepFlow - AI-powered attention guardian that protects your focus.
+  tags:
+    - AI
+    - Productivity
+    - Tool
   variables:
     # Backend & Agent Shared
     - key: REDIS_URL
@@ -72,92 +76,69 @@ spec:
   services:
     - name: Backend
       template: GIT
+      domainKey: BACKEND_DOMAIN
       spec:
         source:
-          source: GITHUB
-          repo: 1136691264
+          repoID: 1136691264
           branch: main
-          rootDirectory: backend
-
+        rootDirectory: backend
         ports:
           - id: http
             port: 8000
             type: HTTP
-      domainKey: BACKEND_DOMAIN
-      env:
-        REDIS_URL:
-          default: ${REDIS_URL}
-          expose: true
-        SUPABASE_URL:
-          default: ${SUPABASE_URL}
-          expose: true
-        SUPABASE_ANON_KEY:
-          default: ${SUPABASE_KEY}
-          expose: true
-        SUPABASE_SERVICE_ROLE_KEY:
-          default: ${SUPABASE_SERVICE_ROLE_KEY}
-          expose: true
+        env:
+          REDIS_URL:
+            default: ${REDIS_URL}
+          SUPABASE_URL:
+            default: ${SUPABASE_URL}
+          SUPABASE_ANON_KEY:
+            default: ${SUPABASE_KEY}
+          SUPABASE_SERVICE_ROLE_KEY:
+            default: ${SUPABASE_SERVICE_ROLE_KEY}
 
     - name: Agent
       template: GIT
       spec:
         source:
-          source: GITHUB
-          repo: 1136691264
+          repoID: 1136691264
           branch: main
-          rootDirectory: agent
-
-      env:
-        REDIS_URL:
-          default: ${REDIS_URL}
-          expose: true
-        OPENAI_API_KEY:
-          default: ${OPENAI_API_KEY}
-          expose: true
-        OPENAI_API_BASE:
-          default: ${OPENAI_API_BASE}
-          expose: true
-        LLM_MODEL:
-          default: ${LLM_MODEL}
-          expose: true
-        OPIK_API_KEY:
-          default: ${OPIK_API_KEY}
-          expose: true
-        OPIK_PROJECT_NAME:
-          default: ${OPIK_PROJECT_NAME}
-          expose: true
-        OPIK_WORKSPACE:
-          default: ${OPIK_WORKSPACE}
-          expose: true
-        TELEGRAM_BOT_TOKEN:
-          default: ${TELEGRAM_BOT_TOKEN}
-          expose: true
+        rootDirectory: agent
+        env:
+          REDIS_URL:
+            default: ${REDIS_URL}
+          OPENAI_API_KEY:
+            default: ${OPENAI_API_KEY}
+          OPENAI_API_BASE:
+            default: ${OPENAI_API_BASE}
+          LLM_MODEL:
+            default: ${LLM_MODEL}
+          OPIK_API_KEY:
+            default: ${OPIK_API_KEY}
+          OPIK_PROJECT_NAME:
+            default: ${OPIK_PROJECT_NAME}
+          OPIK_WORKSPACE:
+            default: ${OPIK_WORKSPACE}
+          TELEGRAM_BOT_TOKEN:
+            default: ${TELEGRAM_BOT_TOKEN}
 
     - name: Frontend
       template: GIT
+      domainKey: FRONTEND_DOMAIN
       spec:
         source:
-          source: GITHUB
-          repo: 1136691264
+          repoID: 1136691264
           branch: main
-          rootDirectory: frontend
+        rootDirectory: frontend
         ports:
           - id: http
             port: 3000
             type: HTTP
-      domainKey: FRONTEND_DOMAIN
-      # Frontend API URL binding to Backend Domain
-      env:
-        NEXT_PUBLIC_API_URL:
-          default: https://${BACKEND_DOMAIN}/api/v1
-          expose: true
-        NEXT_PUBLIC_SUPABASE_URL:
-          default: ${SUPABASE_URL}
-          expose: true
-        NEXT_PUBLIC_SUPABASE_ANON_KEY:
-          default: ${SUPABASE_KEY}
-          expose: true
-        NEXT_PUBLIC_SITE_URL:
-          default: https://${FRONTEND_DOMAIN}
-          expose: true
-
+        env:
+          NEXT_PUBLIC_API_URL:
+            default: https://${BACKEND_DOMAIN}/api/v1
+          NEXT_PUBLIC_SUPABASE_URL:
+            default: ${SUPABASE_URL}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY:
+            default: ${SUPABASE_KEY}
+          NEXT_PUBLIC_SITE_URL:
+            default: https://${FRONTEND_DOMAIN}
