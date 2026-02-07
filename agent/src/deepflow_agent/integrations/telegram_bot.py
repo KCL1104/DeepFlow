@@ -12,6 +12,7 @@ import os
 from datetime import datetime
 from typing import Optional
 
+import redis
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -34,12 +35,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_redis_client():
-    """Get Upstash Redis client for user bindings."""
-    from upstash_redis import Redis
-    return Redis(
-        url=os.getenv("UPSTASH_REDIS_REST_URL"),
-        token=os.getenv("UPSTASH_REDIS_REST_TOKEN")
-    )
+    """Get standard Redis client for user bindings."""
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+    return redis.from_url(redis_url, decode_responses=True)
 
 
 class DeepFlowTelegramBot:

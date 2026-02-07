@@ -79,9 +79,10 @@ spec:
       domainKey: BACKEND_DOMAIN
       spec:
         source:
-          repoID: 1136691264
+          source: GITHUB
+          repo: 1136691264
           branch: main
-        rootDirectory: backend
+          rootDirectory: backend
         ports:
           - id: http
             port: 8000
@@ -100,9 +101,10 @@ spec:
       template: GIT
       spec:
         source:
-          repoID: 1136691264
+          source: GITHUB
+          repo: 1136691264
           branch: main
-        rootDirectory: agent
+          rootDirectory: agent
         env:
           REDIS_URL:
             default: ${REDIS_URL}
@@ -126,9 +128,10 @@ spec:
       domainKey: FRONTEND_DOMAIN
       spec:
         source:
-          repoID: 1136691264
+          source: GITHUB
+          repo: 1136691264
           branch: main
-        rootDirectory: frontend
+          rootDirectory: frontend
         ports:
           - id: http
             port: 3000

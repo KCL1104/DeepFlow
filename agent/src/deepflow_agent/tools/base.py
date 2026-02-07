@@ -11,25 +11,24 @@ import os
 from functools import wraps
 from typing import Any, Callable
 from opik import track
-from upstash_redis import Redis
+import redis
 
 # Redis client singleton
-_redis_client: Redis | None = None
+_redis_client: redis.Redis | None = None
 
 
-def get_redis_client() -> Redis:
+def get_redis_client() -> redis.Redis:
     """Get or create Redis client singleton."""
     global _redis_client
     if _redis_client is None:
-        redis_url = os.getenv("UPSTASH_REDIS_REST_URL")
-        redis_token = os.getenv("UPSTASH_REDIS_REST_TOKEN")
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         
-        if not redis_url or not redis_token:
+        if not redis_url:
             raise ValueError(
-                "Redis not configured. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN"
+                "Redis not configured. Set REDIS_URL environment variable."
             )
         
-        _redis_client = Redis(url=redis_url, token=redis_token)
+        _redis_client = redis.from_url(redis_url, decode_responses=True)
     
     return _redis_client
 
