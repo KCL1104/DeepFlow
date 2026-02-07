@@ -7,16 +7,6 @@ export async function middleware(request: NextRequest) {
     // 這解決了反向代理環境中 request.url 可能返回 localhost 的問題
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
 
-    // Dev bypass 檢查 (在 Supabase 認證之前)
-    const devToken = request.cookies.get('deepflow_dev_token')?.value
-    if (devToken && devToken.startsWith('dev-user-')) {
-        return NextResponse.next({
-            request: {
-                headers: request.headers,
-            },
-        })
-    }
-
     let response = NextResponse.next({
         request: {
             headers: request.headers,

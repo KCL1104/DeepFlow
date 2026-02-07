@@ -1,21 +1,14 @@
 import { supabase } from '@/lib/supabase'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-// Hardcoded Dev Token for testing
-const DEV_TOKEN = 'dev-user-123';
 
 // Create a custom fetch client that adds auth headers
 async function fetchClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    // 1. Try Supabase Session
+    // Get Supabase Session token
     const { data } = await supabase.auth.getSession()
-    let token = data.session?.access_token
+    const token = data.session?.access_token
 
-    // 2. Fallback to Dev Token (if stored manually)
-    if (!token && typeof window !== 'undefined') {
-        token = localStorage.getItem('deepflow_token') || undefined
-    }
-
-    // 3. Construct Headers
+    // Construct Headers
     const headers: HeadersInit = {
         'Content-Type': 'application/json',
         ...options.headers,

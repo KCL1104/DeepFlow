@@ -37,20 +37,14 @@ export default function Home() {
           </span>
         </div>
 
-        {/* CTA Buttons */}
-        <div className="flex gap-4 justify-center">
+        {/* CTA Button */}
+        <div className="flex justify-center">
           <Link
             href="/login"
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-sage-600 to-sage-500 hover:from-sage-500 hover:to-sage-400 text-white font-semibold transition-all shadow-lg shadow-sage-500/25 hover:shadow-sage-500/40"
           >
             Get Started
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <Link
-            href="/dashboard"
-            className="px-8 py-4 rounded-xl border border-sage-200 dark:border-sage-700 text-sage-700 dark:text-sage-300 hover:bg-sage-100 dark:hover:bg-sage-800/50 font-semibold transition-colors"
-          >
-            Demo Dashboard
           </Link>
         </div>
       </div>
