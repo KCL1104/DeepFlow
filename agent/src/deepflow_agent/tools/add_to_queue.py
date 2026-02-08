@@ -1,7 +1,8 @@
 """
 Add to Queue Tool
 
-Adds a task to the user's priority queue in Redis.
+Adds a task to the user's priority queue.
+Uses Supabase for persistence and Redis for queue ordering.
 """
 
 import json
@@ -11,6 +12,7 @@ from typing import Literal
 
 from langchain.tools import tool
 
+from ..config import get_settings
 from .base import get_redis_client, calculate_priority_score, tool_with_tracing
 
 
@@ -25,7 +27,7 @@ def add_to_queue(
     estimated_minutes: int = 15
 ) -> dict:
     """
-    Add a task to the user's priority queue in Redis.
+    Add a task to the user's priority queue.
     
     Use this tool when a message needs to be queued for later attention.
     The task will be sorted by priority score based on urgency and other factors.
@@ -63,7 +65,8 @@ def _add_to_queue_impl(
     source_id: str,
     estimated_minutes: int
 ) -> dict:
-    """Internal implementation with Opik tracing."""
+    """Internal implementation with Supabase persistence and Redis queue."""
+    settings = get_settings()
     redis = get_redis_client()
     
     # Generate task ID
@@ -75,10 +78,44 @@ def _add_to_queue_impl(
         estimated_minutes=estimated_minutes
     )
     
-    # Create task object
+    # Derive title from summary
+    title = task_summary[:50] if len(task_summary) < 50 else f"Task from {source.title()}"
+    
+    # 1. Persist to Supabase (if configured)
+    supabase_success = False
+    if settings.supabase_url and settings.supabase_service_role_key:
+        try:
+            from supabase import create_client
+            supabase = create_client(settings.supabase_url, settings.supabase_service_role_key)
+            
+            task_data = {
+                "id": task_id,
+                "user_id": user_id,
+                "title": title,
+                "summary": task_summary[:200],
+                "suggested_action": f"Review {source} message",
+                "urgency": urgency_score,
+                "estimated_minutes": estimated_minutes,
+                "context_tags": [category, source],
+                "source": source,
+                "status": "pending",
+                "created_at": datetime.utcnow().isoformat(),
+            }
+            
+            supabase.table("tasks").insert(task_data).execute()
+            supabase_success = True
+        except Exception as e:
+            # Log but don't fail - still add to Redis queue
+            print(f"Warning: Failed to persist to Supabase: {e}")
+    
+    # 2. Add to Redis queue (always)
+    queue_key = f"user:{user_id}:queue"
+    task_key = f"task:{task_id}"
+    
+    # Store task details in Redis as backup
     task = {
         "id": task_id,
-        "summary": task_summary[:200],  # Limit length
+        "summary": task_summary[:200],
         "urgency_score": urgency_score,
         "category": category,
         "source": source,
@@ -89,19 +126,11 @@ def _add_to_queue_impl(
         "priority_score": priority_score,
     }
     
-    # Queue key
-    queue_key = f"user:{user_id}:queue"
-    task_key = f"task:{task_id}"
-    
-    # Store task details
     redis.set(task_key, json.dumps(task))
-    
-    # Add to sorted set (higher score = higher priority)
     redis.zadd(queue_key, {task_id: priority_score})
     
-    # Get queue length and position
+    # Get queue info
     queue_length = redis.zcard(queue_key)
-    # Position is based on rank (0 = highest priority)
     position = redis.zrevrank(queue_key, task_id)
     
     return {
@@ -109,5 +138,6 @@ def _add_to_queue_impl(
         "priority_score": priority_score,
         "position": position + 1 if position is not None else 1,
         "queue_length": queue_length,
+        "persisted_to_db": supabase_success,
         "message": f"Task added to queue at position {position + 1 if position is not None else 1}"
     }

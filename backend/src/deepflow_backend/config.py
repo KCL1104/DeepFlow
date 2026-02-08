@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # App
     app_env: str = "development"
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,https://deepflow.zeabur.app,https://deepflow1.zeabur.app"
 
     @property
     def cors_origins_list(self) -> List[str]:

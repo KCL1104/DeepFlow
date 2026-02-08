@@ -17,6 +17,7 @@ dependencies = [
     "redis>=7.1.0",
     "slack-sdk>=3.39.0",
     "slack_bolt>=1.18.0",
+    "supabase>=2.27.0",
     "tqdm>=4.67.1",
 ]
 

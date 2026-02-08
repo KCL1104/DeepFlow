@@ -34,9 +34,16 @@ class Settings(BaseSettings):
     # Redis connection URL
     redis_url: str = "redis://localhost:6379"
 
+    # Supabase (for direct DB access)
+    supabase_url: str = ""
+    supabase_service_role_key: str = ""
+
     # Slack Integration
     slack_bot_token: str = ""
     slack_signing_secret: str = ""
+
+    # Backend API
+    backend_url: str = "http://localhost:8000"
 
     # Priority Weights
     priority_weight_urgency: float = 0.4

@@ -53,9 +53,15 @@ export interface Task {
     id: string;
     title: string;
     summary?: string;
+    suggested_action?: string;
     urgency: number;
+    estimated_minutes?: number;
+    deadline?: string;
     status: 'pending' | 'in_progress' | 'completed' | 'blocked' | 'deferred';
+    priority_score: number;
+    context_tags: string[];
     created_at: string;
+    completed_at?: string;
 }
 
 export interface QueueResponse {
@@ -73,6 +79,9 @@ export interface DailyStats {
 }
 
 export const api = {
+    // Generic get method for any endpoint
+    get: <T>(endpoint: string) => fetchClient<T>(endpoint),
+
     state: {
         get: () => fetchClient<StateResponse>('/state'),
         update: (state: FlowState['state']) =>

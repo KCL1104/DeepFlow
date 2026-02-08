@@ -8,6 +8,7 @@ from .auth import router as auth_router
 from .notifications import router as notifications_router
 from .webhooks import router as webhooks_router
 from .stats import router as stats_router
+from .user import router as user_router
 
 __all__ = [
     "state_router",
@@ -18,5 +19,6 @@ __all__ = [
     "notifications_router",
     "webhooks_router",
     "stats_router",
+    "user_router",
 ]
 
