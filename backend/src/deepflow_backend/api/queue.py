@@ -11,10 +11,10 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, status
 
 from ..deps import CurrentUser, get_current_user, get_queue_manager
-from ..db import get_supabase_client, TaskQueueManager
+from ..db import get_supabase_admin_client, TaskQueueManager
+from .error_handling import raise_db_http_exception
 from ..schemas import (
     TaskCreate,
-    TaskUpdate,
     TaskResponse,
     TaskStatus,
     QueueResponse,
@@ -42,7 +42,10 @@ async def get_queue(
     queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Get user's task queue with current task."""
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading queue data")
 
     # Get current task ID from Redis
     current_task_id = queue_manager.get_current_task(user.id)
@@ -59,14 +62,18 @@ async def get_queue(
     current_task = None
 
     if task_ids:
-        result = (
-            supabase.table("tasks")
-            .select("*")
-            .in_("id", task_ids)
-            .execute()
-        )
+        try:
+            result = (
+                supabase.table("tasks")
+                .select("*")
+                .eq("user_id", user.id)
+                .in_("id", task_ids)
+                .execute()
+            )
+        except Exception as exc:
+            raise_db_http_exception(exc, "loading queue tasks")
 
-        task_map = {t["id"]: t for t in result.data}
+        task_map = {t["id"]: t for t in (result.data or [])}
 
         for tid, score in queue_items:
             if tid in task_map:
@@ -114,7 +121,10 @@ async def create_task(
     queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Create a new task and add to queue."""
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "creating task")
 
     task_id = str(uuid4())
     score = calculate_priority_score(request.urgency, request.deadline)
@@ -134,7 +144,12 @@ async def create_task(
         "created_at": datetime.utcnow().isoformat(),
     }
 
-    result = supabase.table("tasks").insert(task_data).execute()
+    try:
+        result = supabase.table("tasks").insert(task_data).execute()
+        if not result.data:
+            raise RuntimeError("Insert returned no rows")
+    except Exception as exc:
+        raise_db_http_exception(exc, "creating task")
 
     # Add to Redis queue
     queue_manager.add_task(user.id, task_id, score)
@@ -158,7 +173,10 @@ async def pop_next_task(
     queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Pop next highest priority task from queue."""
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "popping next task")
 
     # Pop from Redis
     task_id = queue_manager.pop_next(user.id)
@@ -169,11 +187,21 @@ async def pop_next_task(
     # Set as current task
     queue_manager.set_current_task(user.id, task_id)
 
-    # Update status in Supabase
-    supabase.table("tasks").update({"status": "in_progress"}).eq("id", task_id).execute()
+    try:
+        # Update status in Supabase
+        supabase.table("tasks").update({"status": "in_progress"}).eq("id", task_id).eq("user_id", user.id).execute()
 
-    # Fetch task details
-    result = supabase.table("tasks").select("*").eq("id", task_id).single().execute()
+        # Fetch task details
+        result = (
+            supabase.table("tasks")
+            .select("*")
+            .eq("id", task_id)
+            .eq("user_id", user.id)
+            .single()
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading next task")
 
     if not result.data:
         return None
@@ -198,14 +226,27 @@ async def get_current_task(
     queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Get current active task."""
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading current task")
 
     task_id = queue_manager.get_current_task(user.id)
 
     if not task_id:
         return None
 
-    result = supabase.table("tasks").select("*").eq("id", task_id).single().execute()
+    try:
+        result = (
+            supabase.table("tasks")
+            .select("*")
+            .eq("id", task_id)
+            .eq("user_id", user.id)
+            .single()
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading current task")
 
     if not result.data:
         return None
@@ -231,20 +272,26 @@ async def get_task_history(
     offset: int = 0,
 ):
     """Get completed tasks history."""
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading task history")
 
-    result = (
-        supabase.table("tasks")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("status", "completed")
-        .order("completed_at", desc=True)
-        .range(offset, offset + limit - 1)
-        .execute()
-    )
+    try:
+        result = (
+            supabase.table("tasks")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("status", "completed")
+            .order("completed_at", desc=True)
+            .range(offset, offset + limit - 1)
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading task history")
 
     tasks = []
-    for t in result.data:
+    for t in (result.data or []):
         tasks.append(
             TaskResponse(
                 id=t["id"],

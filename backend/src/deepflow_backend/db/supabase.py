@@ -22,4 +22,8 @@ def get_supabase_client() -> Client:
 def get_supabase_admin_client() -> Client:
     """Get cached Supabase admin client with service role key."""
     settings = get_settings()
+    if not settings.supabase_url:
+        raise RuntimeError("SUPABASE_URL is not configured")
+    if not settings.supabase_service_role_key:
+        raise RuntimeError("SUPABASE_SERVICE_ROLE_KEY is not configured")
     return create_client(settings.supabase_url, settings.supabase_service_role_key)

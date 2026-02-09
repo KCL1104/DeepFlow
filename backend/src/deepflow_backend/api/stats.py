@@ -5,13 +5,14 @@ Provides dynamic statistics for the Dashboard.
 """
 
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from ..deps import CurrentUser, get_current_user
-from ..db import get_supabase_client
+from ..db import get_supabase_admin_client
+from .error_handling import raise_db_http_exception
 
 
 router = APIRouter(prefix="/stats", tags=["stats"])
@@ -40,39 +41,51 @@ async def get_daily_stats(user: CurrentUser = Depends(get_current_user)):
     """
     Get today's statistics for the dashboard.
     """
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading daily stats")
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     
-    # Get completed tasks today
-    completed_result = (
-        supabase.table("tasks")
-        .select("*", count="exact")
-        .eq("user_id", user.id)
-        .eq("status", "completed")
-        .gte("completed_at", today_start.isoformat())
-        .execute()
-    )
+    try:
+        # Get completed tasks today
+        completed_result = (
+            supabase.table("tasks")
+            .select("*", count="exact")
+            .eq("user_id", user.id)
+            .eq("status", "completed")
+            .gte("completed_at", today_start.isoformat())
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading daily stats")
     tasks_completed = completed_result.count or 0
     
-    # Get all tasks created today (intercepted signals)
-    all_tasks_result = (
-        supabase.table("tasks")
-        .select("*", count="exact")
-        .eq("user_id", user.id)
-        .gte("created_at", today_start.isoformat())
-        .execute()
-    )
+    try:
+        # Get all tasks created today (intercepted signals)
+        all_tasks_result = (
+            supabase.table("tasks")
+            .select("*", count="exact")
+            .eq("user_id", user.id)
+            .gte("created_at", today_start.isoformat())
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading daily stats")
     tasks_intercepted = all_tasks_result.count or 0
     
-    # Get flow sessions from state changes (simplified: count tasks marked in_progress)
-    flow_result = (
-        supabase.table("tasks")
-        .select("*", count="exact")
-        .eq("user_id", user.id)
-        .gte("created_at", today_start.isoformat())
-        .neq("status", "pending")
-        .execute()
-    )
+    try:
+        # Get flow sessions from state changes (simplified: count tasks marked in_progress)
+        flow_result = (
+            supabase.table("tasks")
+            .select("*", count="exact")
+            .eq("user_id", user.id)
+            .gte("created_at", today_start.isoformat())
+            .neq("status", "pending")
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading daily stats")
     flow_sessions = flow_result.count or 0
     
     # Calculate estimated deep work time (25 min per flow session)
@@ -95,18 +108,24 @@ async def get_weekly_stats(user: CurrentUser = Depends(get_current_user)):
     """
     Get weekly statistics for the dashboard.
     """
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading weekly stats")
     today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
     week_start = today - timedelta(days=7)
     
-    # Get all tasks from the past week
-    week_result = (
-        supabase.table("tasks")
-        .select("*")
-        .eq("user_id", user.id)
-        .gte("created_at", week_start.isoformat())
-        .execute()
-    )
+    try:
+        # Get all tasks from the past week
+        week_result = (
+            supabase.table("tasks")
+            .select("*")
+            .eq("user_id", user.id)
+            .gte("created_at", week_start.isoformat())
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading weekly stats")
     
     tasks = week_result.data or []
     

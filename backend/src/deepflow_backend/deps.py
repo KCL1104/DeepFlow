@@ -6,6 +6,7 @@ Provides dependency injection for database clients and auth.
 
 from functools import lru_cache
 from typing import Annotated, Optional
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -67,7 +68,15 @@ async def get_current_user(
     # 1. Dev Auth Bypass (Only in Development)
     if settings.app_env == "development" and token.startswith("dev-user-"):
         # Allow dev token for testing without Supabase
-        user_id = token.replace("dev-user-", "")
+        user_id = token.replace("dev-user-", "", 1)
+        try:
+            UUID(user_id)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid development token user id format",
+                headers={"WWW-Authenticate": "Bearer"},
+            ) from exc
         return CurrentUser(
             id=user_id,
             email=f"dev{user_id}@deepflow.ai",

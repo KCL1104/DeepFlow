@@ -9,7 +9,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from ..deps import CurrentUser, get_current_user, get_queue_manager
-from ..db import get_supabase_client, TaskQueueManager
+from ..db import get_supabase_admin_client, TaskQueueManager
+from .error_handling import raise_db_http_exception
 from ..schemas import TaskUpdate, TaskResponse, TaskStatus
 
 
@@ -24,17 +25,23 @@ async def update_task(
     queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Update task status or details."""
-    supabase = get_supabase_client()
+    try:
+        supabase = get_supabase_admin_client()
+    except Exception as exc:
+        raise_db_http_exception(exc, "updating task")
 
     # Verify task belongs to user
-    existing = (
-        supabase.table("tasks")
-        .select("*")
-        .eq("id", task_id)
-        .eq("user_id", user.id)
-        .single()
-        .execute()
-    )
+    try:
+        existing = (
+            supabase.table("tasks")
+            .select("*")
+            .eq("id", task_id)
+            .eq("user_id", user.id)
+            .single()
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading task")
 
     if not existing.data:
         raise HTTPException(
@@ -50,32 +57,54 @@ async def update_task(
         update_data["summary"] = request.summary
     if request.urgency is not None:
         update_data["urgency"] = request.urgency
+    clear_current = False
+    remove_from_queue = False
+    deferred_score = None
     if request.status:
         update_data["status"] = request.status.value
 
         # Handle status-specific logic
         if request.status == TaskStatus.COMPLETED:
             update_data["completed_at"] = datetime.utcnow().isoformat()
-            queue_manager.clear_current_task(user.id)
-            queue_manager.remove_task(user.id, task_id)
+        if request.status in {TaskStatus.COMPLETED, TaskStatus.BLOCKED, TaskStatus.DEFERRED}:
+            clear_current = True
 
-        elif request.status == TaskStatus.BLOCKED:
-            queue_manager.clear_current_task(user.id)
-
+        if request.status == TaskStatus.COMPLETED:
+            remove_from_queue = True
         elif request.status == TaskStatus.DEFERRED:
-            queue_manager.clear_current_task(user.id)
             # Re-add to queue with lower priority
-            queue_manager.add_task(user.id, task_id, existing.data.get("urgency", 5) * 5)
+            deferred_score = existing.data.get("urgency", 5) * 5
 
-    result = (
-        supabase.table("tasks")
-        .update(update_data)
-        .eq("id", task_id)
-        .execute()
-    )
+    try:
+        (
+            supabase.table("tasks")
+            .update(update_data)
+            .eq("id", task_id)
+            .eq("user_id", user.id)
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "updating task")
+
+    if clear_current:
+        queue_manager.clear_current_task(user.id)
+    if remove_from_queue:
+        queue_manager.remove_task(user.id, task_id)
+    if deferred_score is not None:
+        queue_manager.add_task(user.id, task_id, deferred_score)
 
     # Fetch updated task
-    updated = supabase.table("tasks").select("*").eq("id", task_id).single().execute()
+    try:
+        updated = (
+            supabase.table("tasks")
+            .select("*")
+            .eq("id", task_id)
+            .eq("user_id", user.id)
+            .single()
+            .execute()
+        )
+    except Exception as exc:
+        raise_db_http_exception(exc, "loading updated task")
     t = updated.data
 
     return TaskResponse(
