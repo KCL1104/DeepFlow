@@ -1,6 +1,9 @@
 import { supabase } from '@/lib/supabase'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+export const API_BASE_URL = rawApiBaseUrl.endsWith('/')
+    ? rawApiBaseUrl.slice(0, -1)
+    : rawApiBaseUrl;
 
 // Create a custom fetch client that adds auth headers
 async function fetchClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

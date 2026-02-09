@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Loader2, Plus, X, Sparkles } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, API_BASE_URL } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 
 interface QuickAddDialogProps {
@@ -15,8 +16,14 @@ function buildQuickAddTitle(content: string): string {
 
 export function QuickAddDialog({ onTaskAdded }: QuickAddDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+        return () => setIsMounted(false);
+    }, []);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -54,7 +61,6 @@ export function QuickAddDialog({ onTaskAdded }: QuickAddDialogProps) {
 
             onTaskAdded?.();
 
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
             const { data: sessionData } = await supabase.auth.getSession();
             const token = sessionData.session?.access_token;
             const userId = sessionData.session?.user?.id;
@@ -69,7 +75,7 @@ export function QuickAddDialog({ onTaskAdded }: QuickAddDialogProps) {
             }
 
             try {
-                const res = await fetch(`${API_URL}/webhooks/simulate`, {
+                const res = await fetch(`${API_BASE_URL}/webhooks/simulate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -113,8 +119,12 @@ export function QuickAddDialog({ onTaskAdded }: QuickAddDialogProps) {
         );
     }
 
-    return (
-        <div className="fixed inset-0 z-[11000]" role="dialog" aria-modal="true" aria-label="Quick Add Task">
+    if (!isMounted) {
+        return null;
+    }
+
+    return createPortal(
+        <div className="fixed inset-0 z-[2147483000]" role="dialog" aria-modal="true" aria-label="Quick Add Task">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -176,6 +186,7 @@ export function QuickAddDialog({ onTaskAdded }: QuickAddDialogProps) {
                     </form>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

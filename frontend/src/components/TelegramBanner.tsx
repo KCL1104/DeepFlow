@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+import { API_BASE_URL } from "@/lib/api";
 
 interface TelegramBindingResponse {
     is_linked: boolean;

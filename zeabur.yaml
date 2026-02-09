@@ -156,8 +156,10 @@ spec:
             default: production
           PORT:
             default: "3000"
+          BACKEND_URL:
+            default: https://${BACKEND_DOMAIN}
           NEXT_PUBLIC_API_URL:
-            default: https://${BACKEND_DOMAIN}/api/v1
+            default: /api/v1
           NEXT_PUBLIC_SUPABASE_URL:
             default: ${SUPABASE_URL}
           NEXT_PUBLIC_SUPABASE_ANON_KEY:
