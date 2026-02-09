@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { buildSitePath } from '@/lib/site-url'
 
 interface AuthContextType {
     user: User | null
@@ -51,12 +52,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const signUp = async (email: string, password: string): Promise<{ error?: Error }> => {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+        const redirectTo = buildSitePath('/auth/callback', {
+            envSiteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+            windowOrigin: window.location.origin,
+        })
         const { error } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                emailRedirectTo: `${siteUrl}/auth/callback`,
+                emailRedirectTo: redirectTo,
             },
         })
         if (error) {
@@ -66,13 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const signInWithGitHub = async (): Promise<void> => {
-        // 使用環境變數來確保正確的 redirect URL
-        // 這解決了 SSR 環境中 window.location.origin 可能不正確的問題
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+        const redirectTo = buildSitePath('/auth/callback', {
+            envSiteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+            windowOrigin: window.location.origin,
+        })
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'github',
             options: {
-                redirectTo: `${siteUrl}/auth/callback`,
+                redirectTo,
             },
         })
         if (error) throw error

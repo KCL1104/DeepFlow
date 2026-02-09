@@ -1,11 +1,13 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { buildSitePath } from '@/lib/site-url'
 
 export async function middleware(request: NextRequest) {
-    // 使用環境變數來確保正確的 redirect URL
-    // 這解決了反向代理環境中 request.url 可能返回 localhost 的問題
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    const siteUrlOptions = {
+        envSiteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+        requestUrl: request.url,
+    }
 
     let response = NextResponse.next({
         request: {
@@ -22,7 +24,7 @@ export async function middleware(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
                     response = NextResponse.next({
                         request,
                     })
@@ -41,24 +43,21 @@ export async function middleware(request: NextRequest) {
     // Protected routes
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
         if (!user) {
-            const loginUrl = siteUrl ? `${siteUrl}/login` : new URL('/login', request.url)
-            return NextResponse.redirect(loginUrl)
+            return NextResponse.redirect(buildSitePath('/login', siteUrlOptions))
         }
     }
 
     // Redirect login to dashboard if already logged in
     if (request.nextUrl.pathname === '/login') {
         if (user) {
-            const dashboardUrl = siteUrl ? `${siteUrl}/dashboard` : new URL('/dashboard', request.url)
-            return NextResponse.redirect(dashboardUrl)
+            return NextResponse.redirect(buildSitePath('/dashboard', siteUrlOptions))
         }
     }
 
     // Redirect register to dashboard if already logged in
     if (request.nextUrl.pathname === '/register') {
         if (user) {
-            const dashboardUrl = siteUrl ? `${siteUrl}/dashboard` : new URL('/dashboard', request.url)
-            return NextResponse.redirect(dashboardUrl)
+            return NextResponse.redirect(buildSitePath('/dashboard', siteUrlOptions))
         }
     }
 
@@ -68,4 +67,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: ['/dashboard/:path*', '/login', '/register'],
 }
-

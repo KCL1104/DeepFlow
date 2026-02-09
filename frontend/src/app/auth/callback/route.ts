@@ -1,23 +1,28 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { buildSitePath, sanitizeNextPath } from '@/lib/site-url'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
   const error = searchParams.get('error')
   const error_description = searchParams.get('error_description')
-  const next = searchParams.get('next') ?? '/dashboard'
-
-  // 使用環境變數來確保正確的 redirect URL
-  // 這解決了反向代理環境中 request.url origin 可能返回 localhost 的問題
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin
+  const next = sanitizeNextPath(searchParams.get('next'))
+  const siteUrlOptions = {
+    envSiteUrl: process.env.NEXT_PUBLIC_SITE_URL,
+    requestUrl: request.url,
+  }
 
   // 處理 Supabase 返回的錯誤
   if (error) {
     console.error('Auth callback error:', error, error_description)
+    const params = new URLSearchParams({
+      error,
+      error_description: error_description || '',
+    })
     return NextResponse.redirect(
-      `${siteUrl}/login?error=${encodeURIComponent(error)}&error_description=${encodeURIComponent(error_description || '')}`
+      buildSitePath(`/login?${params.toString()}`, siteUrlOptions)
     )
   }
 
@@ -43,15 +48,18 @@ export async function GET(request: Request) {
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!exchangeError) {
-      return NextResponse.redirect(`${siteUrl}${next}`)
+      return NextResponse.redirect(buildSitePath(next, siteUrlOptions))
     }
 
     console.error('Code exchange error:', exchangeError)
+    const params = new URLSearchParams({
+      error: 'code_exchange_failed',
+      error_description: exchangeError.message,
+    })
     return NextResponse.redirect(
-      `${siteUrl}/login?error=code_exchange_failed&error_description=${encodeURIComponent(exchangeError.message)}`
+      buildSitePath(`/login?${params.toString()}`, siteUrlOptions)
     )
   }
 
-  return NextResponse.redirect(`${siteUrl}/login?error=missing_code`)
+  return NextResponse.redirect(buildSitePath('/login?error=missing_code', siteUrlOptions))
 }
-

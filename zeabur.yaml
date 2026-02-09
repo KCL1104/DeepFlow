@@ -164,5 +164,6 @@ spec:
             default: ${SUPABASE_URL}
           NEXT_PUBLIC_SUPABASE_ANON_KEY:
             default: ${SUPABASE_ANON_KEY}
+          # Must be a fully-qualified URL (include scheme), e.g. https://deepflow.zeabur.app
           NEXT_PUBLIC_SITE_URL:
             default: https://${FRONTEND_DOMAIN}

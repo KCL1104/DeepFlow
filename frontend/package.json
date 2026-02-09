@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test --experimental-strip-types src/lib/site-url.test.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",

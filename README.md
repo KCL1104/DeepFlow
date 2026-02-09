@@ -73,6 +73,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
+### Frontend Deployment Environment
+
+For production redirects (login, OAuth callback, middleware), set:
+
+- `NEXT_PUBLIC_SITE_URL` to a fully-qualified public URL, including scheme.
+- Valid example: `https://deepflow.zeabur.app`
+- Invalid examples: `deepflow`, `deepflow.zeabur.app` (missing `https://`)
+
 ## Key Technologies
 
 - **Prioritization**: Redis Sorted Sets (ZSET) for O(log N) dynamic priority queueing.
