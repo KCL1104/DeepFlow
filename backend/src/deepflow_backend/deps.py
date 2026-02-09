@@ -51,11 +51,12 @@ def get_queue_manager() -> TaskQueueManager:
 
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
-    settings: Annotated[Settings, Depends(get_settings)]
 ) -> CurrentUser:
     """
     Validate the Supabase JWT and return the current user.
     """
+    settings = get_settings()
+
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

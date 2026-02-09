@@ -10,6 +10,7 @@ import { api, DailyStats } from '@/lib/api';
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<DailyStats | null>(null);
+    const [queueRefreshNonce, setQueueRefreshNonce] = useState(0);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -57,7 +58,7 @@ export default function DashboardPage() {
                     </div>
                     {/* Quick Actions */}
                     <div className="flex gap-2">
-                        <QuickAddDialog />
+                        <QuickAddDialog onTaskAdded={() => setQueueRefreshNonce((prev) => prev + 1)} />
                     </div>
                 </div>
 
@@ -70,7 +71,7 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left: Task Queue (2 cols) */}
                     <div className="lg:col-span-2 space-y-6 opacity-0 animate-fade-in stagger-2">
-                        <TaskQueue />
+                        <TaskQueue refreshNonce={queueRefreshNonce} />
 
                         {/* Calendar Placeholder */}
                         <div className="p-8 rounded-2xl border border-dashed border-sage-300/50 dark:border-sage-700/30 flex flex-col items-center justify-center text-center gap-3 bg-sage-50/30 dark:bg-sage-900/20">
@@ -159,5 +160,4 @@ export default function DashboardPage() {
         </DashboardLayout>
     );
 }
-
 

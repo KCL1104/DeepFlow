@@ -3,22 +3,23 @@ FROM python:3.13-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_LINK_MODE=copy \
-    AGENT_MODE=worker
+    PORT=8000
 
 WORKDIR /app
 
 RUN pip install --no-cache-dir uv
 
-# Install deps in two stages for better layer caching.
+# Install dependencies first for better layer caching.
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
-# Copy source and install project.
+# Copy source and install the local project package.
 COPY src ./src
 COPY main.py ./main.py
-COPY scripts ./scripts
 RUN uv sync --frozen --no-dev
 
 ENV PYTHONPATH=/app/src
 
-CMD ["sh", "-c", "if [ \"$AGENT_MODE\" = \"telegram\" ]; then uv run python scripts/run_telegram_bot.py; else uv run python main.py; fi"]
+EXPOSE 8000
+
+CMD ["sh", "-c", "uv run uvicorn deepflow_backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -5,10 +5,10 @@ Endpoints for user-related operations including Telegram binding status.
 """
 
 import redis
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from ..config import get_settings
-from ..deps import CurrentUser
+from ..deps import CurrentUser, get_current_user
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -20,7 +20,7 @@ def get_redis_client() -> redis.Redis:
 
 
 @router.get("/telegram-binding")
-async def get_telegram_binding(user: CurrentUser):
+async def get_telegram_binding(user: CurrentUser = Depends(get_current_user)):
     """
     Check if current user has linked their Telegram account.
     
@@ -30,9 +30,9 @@ async def get_telegram_binding(user: CurrentUser):
     """
     try:
         redis_client = get_redis_client()
-        
+
         # Check reverse mapping: DeepFlow user ID -> Telegram ID
-        binding_key = f"deepflow_binding:{user['id']}"
+        binding_key = f"deepflow_binding:{user.id}"
         telegram_id = redis_client.get(binding_key)
         
         if telegram_id:
@@ -55,15 +55,15 @@ async def get_telegram_binding(user: CurrentUser):
 
 
 @router.delete("/telegram-binding")
-async def unlink_telegram(user: CurrentUser):
+async def unlink_telegram(user: CurrentUser = Depends(get_current_user)):
     """
     Unlink Telegram account from current user.
     """
     try:
         redis_client = get_redis_client()
-        
+
         # Get the telegram ID first
-        binding_key = f"deepflow_binding:{user['id']}"
+        binding_key = f"deepflow_binding:{user.id}"
         telegram_id = redis_client.get(binding_key)
         
         if not telegram_id:

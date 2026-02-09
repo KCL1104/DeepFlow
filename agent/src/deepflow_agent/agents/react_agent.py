@@ -5,8 +5,7 @@ A ReAct (Reasoning + Acting) agent that can analyze messages and take actions
 using the available tools.
 """
 
-import os
-from typing import Optional
+import logging
 
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
@@ -21,6 +20,8 @@ from ..tools import (
     notify_user_tool,
     send_browser_notification,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # System prompt for the agent
@@ -70,7 +71,8 @@ def create_deepflow_agent(
     user_id: str,
     user_state: str = "IDLE",
     verbose: bool = False,
-    include_memory: bool = True
+    include_memory: bool = True,
+    allow_queue_add: bool = True,
 ):
     """
     Create a DeepFlow agent with all tools.
@@ -112,13 +114,14 @@ def create_deepflow_agent(
     from ..tools import send_telegram_notification
     
     tools = [
-        add_to_queue,
         send_auto_reply,
         update_task_status,
         notify_user_tool,
         send_telegram_notification,  # Primary notification method
         send_browser_notification,   # Fallback (SSE)
     ]
+    if allow_queue_add:
+        tools.insert(0, add_to_queue)
     
     # Format system prompt with user context and history
     system_prompt = AGENT_SYSTEM_PROMPT.format(
@@ -144,7 +147,8 @@ async def process_message(
     sender: str,
     source: str = "manual",
     source_id: str = "",
-    verbose: bool = False
+    verbose: bool = False,
+    allow_queue_add: bool = True,
 ) -> dict:
     """
     Process an incoming message through the DeepFlow agent.
@@ -167,7 +171,8 @@ async def process_message(
     agent = create_deepflow_agent(
         user_id=user_id,
         user_state=user_state,
-        verbose=verbose
+        verbose=verbose,
+        allow_queue_add=allow_queue_add,
     )
     
     gateway = create_semantic_gateway()
@@ -248,7 +253,8 @@ def process_message_sync(
     sender: str,
     source: str = "manual",
     source_id: str = "",
-    verbose: bool = False
+    verbose: bool = False,
+    allow_queue_add: bool = True,
 ) -> dict:
     """
     Synchronous version of process_message.
@@ -261,5 +267,6 @@ def process_message_sync(
         sender=sender,
         source=source,
         source_id=source_id,
-        verbose=verbose
+        verbose=verbose,
+        allow_queue_add=allow_queue_add,
     ))

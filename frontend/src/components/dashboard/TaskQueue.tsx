@@ -1,29 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
 import type { Task } from '@/lib/api';
 import { Clock, Circle, Loader2, CheckCircle2 } from 'lucide-react';
 
-export function TaskQueue() {
+interface TaskQueueProps {
+    refreshNonce?: number;
+}
+
+export function TaskQueue({ refreshNonce = 0 }: TaskQueueProps) {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchQueue = async () => {
-            try {
-                const response = await api.queue.get();
-                setTasks(response.queue);
-            } catch (error) {
-                console.error('Failed to fetch queue:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    const fetchQueue = useCallback(async () => {
+        try {
+            const response = await api.queue.get();
+            setTasks(response.queue);
+        } catch (error) {
+            console.error('Failed to fetch queue:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
+    useEffect(() => {
         fetchQueue();
+    }, [fetchQueue, refreshNonce]);
+
+    useEffect(() => {
         const interval = setInterval(fetchQueue, 5000);
         return () => clearInterval(interval);
-    }, []);
+    }, [fetchQueue]);
 
     if (isLoading) {
         return (
@@ -120,4 +127,3 @@ export function TaskQueue() {
         </div>
     );
 }
-

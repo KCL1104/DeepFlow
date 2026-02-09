@@ -109,7 +109,7 @@ def _add_to_queue_impl(
             print(f"Warning: Failed to persist to Supabase: {e}")
     
     # 2. Add to Redis queue (always)
-    queue_key = f"user:{user_id}:queue"
+    queue_key = f"user:queue:{user_id}"
     task_key = f"task:{task_id}"
     
     # Store task details in Redis as backup

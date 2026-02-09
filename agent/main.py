@@ -11,7 +11,6 @@ import json
 import logging
 import sys
 import os
-from typing import Optional
 
 import redis
 
@@ -19,8 +18,7 @@ import redis
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
 from deepflow_agent.config import get_settings
-from deepflow_agent.agents import process_message, process_message_sync
-from deepflow_agent.models import TaskSource
+from deepflow_agent.agents import process_message
 
 # Configure logging
 logging.basicConfig(
@@ -60,7 +58,7 @@ async def process_signal(redis_client: redis.Redis, signal_data: str):
 
         # 2. Get User State
         # We need to know if the user is in FLOW to make the right decision.
-        state_key = f"user:{user_id}:state"
+        state_key = f"user:state:{user_id}"
         user_state = redis_client.get(state_key) or "IDLE"
 
         logger.info(f"   Context: User={user_id}, State={user_state}")
@@ -74,6 +72,13 @@ async def process_signal(redis_client: redis.Redis, signal_data: str):
             f"Content: {content}\n\n"
             f"Determine urgency and take action (notify or queue)."
         )
+        if metadata.get("task_id"):
+            agent_input += (
+                f"\n\nThis signal is linked to existing task_id={metadata['task_id']} "
+                "already created in queue."
+            )
+
+        allow_queue_add = not bool(metadata.get("skip_queue_add"))
 
         # 4. Invoke ReAct Agent
         # This will auto-execute tools (add_to_queue, send_telegram_notification)
@@ -84,7 +89,8 @@ async def process_signal(redis_client: redis.Redis, signal_data: str):
             sender="System_Signal_Ingestion",
             source=source_str,
             source_id=str(source_id),
-            verbose=True  # Helpful for debugging logs
+            verbose=True,  # Helpful for debugging logs
+            allow_queue_add=allow_queue_add,
         )
 
         logger.info("🤖 Agent Action Complete.")
@@ -146,4 +152,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -7,10 +7,10 @@ Provides dynamic statistics for the Dashboard.
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from ..deps import CurrentUser
+from ..deps import CurrentUser, get_current_user
 from ..db import get_supabase_client
 
 
@@ -36,7 +36,7 @@ class WeeklyStatsResponse(BaseModel):
 
 
 @router.get("/daily", response_model=DailyStatsResponse)
-async def get_daily_stats(user: CurrentUser):
+async def get_daily_stats(user: CurrentUser = Depends(get_current_user)):
     """
     Get today's statistics for the dashboard.
     """
@@ -47,7 +47,7 @@ async def get_daily_stats(user: CurrentUser):
     completed_result = (
         supabase.table("tasks")
         .select("*", count="exact")
-        .eq("user_id", user["id"])
+        .eq("user_id", user.id)
         .eq("status", "completed")
         .gte("completed_at", today_start.isoformat())
         .execute()
@@ -58,7 +58,7 @@ async def get_daily_stats(user: CurrentUser):
     all_tasks_result = (
         supabase.table("tasks")
         .select("*", count="exact")
-        .eq("user_id", user["id"])
+        .eq("user_id", user.id)
         .gte("created_at", today_start.isoformat())
         .execute()
     )
@@ -68,7 +68,7 @@ async def get_daily_stats(user: CurrentUser):
     flow_result = (
         supabase.table("tasks")
         .select("*", count="exact")
-        .eq("user_id", user["id"])
+        .eq("user_id", user.id)
         .gte("created_at", today_start.isoformat())
         .neq("status", "pending")
         .execute()
@@ -91,7 +91,7 @@ async def get_daily_stats(user: CurrentUser):
 
 
 @router.get("/weekly", response_model=WeeklyStatsResponse)
-async def get_weekly_stats(user: CurrentUser):
+async def get_weekly_stats(user: CurrentUser = Depends(get_current_user)):
     """
     Get weekly statistics for the dashboard.
     """
@@ -103,7 +103,7 @@ async def get_weekly_stats(user: CurrentUser):
     week_result = (
         supabase.table("tasks")
         .select("*")
-        .eq("user_id", user["id"])
+        .eq("user_id", user.id)
         .gte("created_at", week_start.isoformat())
         .execute()
     )

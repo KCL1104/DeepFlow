@@ -5,11 +5,9 @@ Long Polling mode for receiving messages and commands.
 Integrates with ReAct Agent for message analysis and task management.
 """
 
-import asyncio
 import json
 import logging
 import os
-from datetime import datetime
 from typing import Optional
 
 import redis
@@ -22,6 +20,7 @@ from telegram.ext import (
     filters,
 )
 from dotenv import load_dotenv
+from supabase import create_client
 
 # Load environment variables
 load_dotenv()
@@ -32,6 +31,9 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+STATE_KEY_PREFIX = "user:state:"
+QUEUE_KEY_PREFIX = "user:queue:"
 
 
 def get_redis_client():
@@ -49,6 +51,14 @@ class DeepFlowTelegramBot:
             raise ValueError("TELEGRAM_BOT_TOKEN not set")
         
         self.redis = get_redis_client()
+        self.supabase = None
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+        if supabase_url and supabase_service_role_key:
+            try:
+                self.supabase = create_client(supabase_url, supabase_service_role_key)
+            except Exception as exc:
+                logger.warning(f"Supabase client initialization failed: {exc}")
         self.application = None
     
     # ==================== Binding Management ====================
@@ -69,39 +79,64 @@ class DeepFlowTelegramBot:
     
     def get_user_state(self, deepflow_user_id: str) -> str:
         """Get user's current state (FLOW/SHALLOW/IDLE)."""
-        key = f"user:{deepflow_user_id}:state"
+        key = f"{STATE_KEY_PREFIX}{deepflow_user_id}"
         state = self.redis.get(key)
         return state if state else "IDLE"
     
     def set_user_state(self, deepflow_user_id: str, state: str):
         """Set user's current state."""
-        key = f"user:{deepflow_user_id}:state"
+        key = f"{STATE_KEY_PREFIX}{deepflow_user_id}"
         self.redis.set(key, state)
         logger.info(f"Set state for {deepflow_user_id}: {state}")
     
     def add_task_to_queue(self, user_id: str, summary: str, category: str = "standard", source: str = "telegram") -> dict:
-        """Manually add a task to user's queue."""
-        import time
-        import uuid
-        
-        task_id = str(uuid.uuid4())[:8]
+        """Add a task using the same toolchain as the Agent worker."""
+        from deepflow_agent.tools.add_to_queue import add_to_queue as add_to_queue_tool
+
         urgency_map = {"critical": 10, "urgent": 7, "standard": 5, "low": 2}
         urgency = urgency_map.get(category, 5)
-        
-        task = {
-            "id": task_id,
-            "summary": summary,
+
+        result = add_to_queue_tool.invoke({
+            "user_id": user_id,
+            "task_summary": summary,
+            "urgency_score": urgency,
             "category": category,
-            "urgency": urgency,
             "source": source,
-            "created_at": time.time()
-        }
-        
-        queue_key = f"user:{user_id}:queue"
-        self.redis.zadd(queue_key, {json.dumps(task): urgency})
-        
-        logger.info(f"Added task {task_id} to {user_id}'s queue: {summary[:30]}...")
-        return task
+            "source_id": f"telegram-manual-{user_id}",
+        })
+        if not result.get("success"):
+            raise RuntimeError(result.get("error", "Unknown error while adding task"))
+
+        payload = result.get("result", {})
+        logger.info(f"Added task {payload.get('task_id')} to {user_id}'s queue: {summary[:30]}...")
+        return payload
+
+    def _get_tasks_from_supabase(self, task_ids: list[str]) -> dict[str, dict]:
+        """Fetch task details from Supabase in bulk."""
+        if not self.supabase or not task_ids:
+            return {}
+        try:
+            result = (
+                self.supabase.table("tasks")
+                .select("id,title,summary,urgency,status,created_at")
+                .in_("id", task_ids)
+                .execute()
+            )
+            rows = result.data or []
+            return {row["id"]: row for row in rows}
+        except Exception as exc:
+            logger.warning(f"Failed to load tasks from Supabase: {exc}")
+            return {}
+
+    def _get_task_from_redis(self, task_id: str) -> dict:
+        """Fallback task lookup from Redis."""
+        task_data = self.redis.get(f"task:{task_id}")
+        if not task_data:
+            return {}
+        try:
+            return json.loads(task_data)
+        except Exception:
+            return {}
     
     # ==================== Command Handlers ====================
     
@@ -213,8 +248,8 @@ class DeepFlowTelegramBot:
             )
             return
         
-        # Get queue from Redis
-        queue_key = f"user:{deepflow_user_id}:queue"
+        # Get queue from Redis (member is task_id)
+        queue_key = f"{QUEUE_KEY_PREFIX}{deepflow_user_id}"
         queue_items = self.redis.zrevrange(queue_key, 0, 4, withscores=True)
         
         if not queue_items:
@@ -226,22 +261,22 @@ class DeepFlowTelegramBot:
             return
         
         queue_text = "*📋 Your Task Queue (Top 5)*\n\n"
-        
-        for i, (item_json, score) in enumerate(queue_items, 1):
-            try:
-                item = json.loads(item_json)
-                category_emoji = {
-                    "critical": "🔴",
-                    "urgent": "🟠",
-                    "standard": "🟡",
-                    "low": "🟢"
-                }
-                emoji = category_emoji.get(item.get("category", "standard"), "⚪")
-                summary = item.get("summary", "No summary")[:50]
-                queue_text += f"{i}. {emoji} {summary}... (Priority: {score:.1f})\n"
-            except:
-                queue_text += f"{i}. Item parsing error\n"
-        
+        task_ids = [task_id for task_id, _ in queue_items]
+        task_map = self._get_tasks_from_supabase(task_ids)
+
+        for i, (task_id, score) in enumerate(queue_items, 1):
+            task = task_map.get(task_id) or self._get_task_from_redis(task_id)
+            if not task:
+                queue_text += f"{i}. ⚪ Task `{task_id}` (Priority: {score:.1f})\n"
+                continue
+
+            urgency = int(task.get("urgency", task.get("urgency_score", 5)))
+            emoji = "🔴" if urgency >= 9 else "🟠" if urgency >= 7 else "🟡" if urgency >= 4 else "🟢"
+            summary = (task.get("summary") or task.get("title") or "Untitled task").strip()
+            if len(summary) > 50:
+                summary = f"{summary[:47]}..."
+            queue_text += f"{i}. {emoji} {summary} (Priority: {score:.1f})\n"
+
         await update.message.reply_text(queue_text, parse_mode="Markdown")
     
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -299,7 +334,7 @@ class DeepFlowTelegramBot:
             f"✅ *Task added!*\n\n"
             f"{category_emoji.get(category, '⚪')} {task_summary}\n"
             f"Priority: {category.upper()}\n"
-            f"ID: `{task['id']}`",
+            f"ID: `{task.get('task_id', 'N/A')}`",
             parse_mode="Markdown"
         )
     

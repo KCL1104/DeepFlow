@@ -8,10 +8,10 @@ from datetime import datetime
 from typing import List
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
-from ..deps import CurrentUser, QueueManager
-from ..db import get_supabase_client
+from ..deps import CurrentUser, get_current_user, get_queue_manager
+from ..db import get_supabase_client, TaskQueueManager
 from ..schemas import (
     TaskCreate,
     TaskUpdate,
@@ -38,17 +38,17 @@ def calculate_priority_score(urgency: int, deadline: datetime | None = None) -> 
 
 @router.get("", response_model=QueueResponse)
 async def get_queue(
-    user: CurrentUser,
-    queue_manager: QueueManager,
+    user: CurrentUser = Depends(get_current_user),
+    queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Get user's task queue with current task."""
     supabase = get_supabase_client()
 
     # Get current task ID from Redis
-    current_task_id = queue_manager.get_current_task(user["id"])
+    current_task_id = queue_manager.get_current_task(user.id)
 
     # Get queue from Redis (task IDs with scores)
-    queue_items = queue_manager.peek(user["id"], count=10)
+    queue_items = queue_manager.peek(user.id, count=10)
 
     # Fetch task details from Supabase
     task_ids = [tid for tid, _ in queue_items]
@@ -103,15 +103,15 @@ async def get_queue(
     return QueueResponse(
         current_task=current_task,
         queue=tasks,
-        total_count=queue_manager.get_queue_length(user["id"]),
+        total_count=queue_manager.get_queue_length(user.id),
     )
 
 
 @router.post("", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(
     request: TaskCreate,
-    user: CurrentUser,
-    queue_manager: QueueManager,
+    user: CurrentUser = Depends(get_current_user),
+    queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Create a new task and add to queue."""
     supabase = get_supabase_client()
@@ -122,7 +122,7 @@ async def create_task(
     # Store task in Supabase
     task_data = {
         "id": task_id,
-        "user_id": user["id"],
+        "user_id": user.id,
         "title": request.title,
         "summary": request.summary,
         "suggested_action": request.suggested_action,
@@ -137,7 +137,7 @@ async def create_task(
     result = supabase.table("tasks").insert(task_data).execute()
 
     # Add to Redis queue
-    queue_manager.add_task(user["id"], task_id, score)
+    queue_manager.add_task(user.id, task_id, score)
 
     return TaskResponse(
         id=task_id,
@@ -154,20 +154,20 @@ async def create_task(
 
 @router.post("/pop", response_model=TaskResponse | None)
 async def pop_next_task(
-    user: CurrentUser,
-    queue_manager: QueueManager,
+    user: CurrentUser = Depends(get_current_user),
+    queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Pop next highest priority task from queue."""
     supabase = get_supabase_client()
 
     # Pop from Redis
-    task_id = queue_manager.pop_next(user["id"])
+    task_id = queue_manager.pop_next(user.id)
 
     if not task_id:
         return None
 
     # Set as current task
-    queue_manager.set_current_task(user["id"], task_id)
+    queue_manager.set_current_task(user.id, task_id)
 
     # Update status in Supabase
     supabase.table("tasks").update({"status": "in_progress"}).eq("id", task_id).execute()
@@ -194,13 +194,13 @@ async def pop_next_task(
 
 @router.get("/current", response_model=TaskResponse | None)
 async def get_current_task(
-    user: CurrentUser,
-    queue_manager: QueueManager,
+    user: CurrentUser = Depends(get_current_user),
+    queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Get current active task."""
     supabase = get_supabase_client()
 
-    task_id = queue_manager.get_current_task(user["id"])
+    task_id = queue_manager.get_current_task(user.id)
 
     if not task_id:
         return None
@@ -226,7 +226,7 @@ async def get_current_task(
 
 @router.get("/history", response_model=List[TaskResponse])
 async def get_task_history(
-    user: CurrentUser,
+    user: CurrentUser = Depends(get_current_user),
     limit: int = 20,
     offset: int = 0,
 ):
@@ -236,7 +236,7 @@ async def get_task_history(
     result = (
         supabase.table("tasks")
         .select("*")
-        .eq("user_id", user["id"])
+        .eq("user_id", user.id)
         .eq("status", "completed")
         .order("completed_at", desc=True)
         .range(offset, offset + limit - 1)
@@ -261,4 +261,3 @@ async def get_task_history(
         )
 
     return tasks
-

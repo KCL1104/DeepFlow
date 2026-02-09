@@ -1,35 +1,95 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loader2, Plus, X, Sparkles } from 'lucide-react';
+import { api } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
-export function QuickAddDialog() {
+interface QuickAddDialogProps {
+    onTaskAdded?: () => void;
+}
+
+function buildQuickAddTitle(content: string): string {
+    const firstLine = content.split('\n')[0]?.trim() || 'Quick task';
+    if (firstLine.length <= 80) return firstLine;
+    return `${firstLine.slice(0, 77)}...`;
+}
+
+export function QuickAddDialog({ onTaskAdded }: QuickAddDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+            }
+        };
+
+        window.addEventListener('keydown', onKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [isOpen]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!content.trim()) return;
+        const trimmedContent = content.trim();
+        if (!trimmedContent) return;
 
         setIsSubmitting(true);
         try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-
-            const res = await fetch(`${API_URL}/webhooks/simulate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    source: 'manual',
-                    content: content,
-                    sender: 'user',
-                    metadata: {
-                        is_quick_add: true
-                    }
-                })
+            const createdTask = await api.queue.create({
+                title: buildQuickAddTitle(trimmedContent),
+                summary: trimmedContent,
+                urgency: 5,
+                context_tags: ['quick_add', 'manual'],
             });
 
-            if (!res.ok) throw new Error('Failed to submit');
+            onTaskAdded?.();
+
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData.session?.access_token;
+            const userId = sessionData.session?.user?.id;
+
+            const webhookMetadata: Record<string, unknown> = {
+                is_quick_add: true,
+                skip_queue_add: true,
+                task_id: createdTask.id,
+            };
+            if (userId) {
+                webhookMetadata.user_id = userId;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/webhooks/simulate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                    body: JSON.stringify({
+                        source: 'manual',
+                        content: trimmedContent,
+                        sender: userId || 'user',
+                        metadata: webhookMetadata,
+                    })
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Webhook sync failed: ${res.status}`);
+                }
+            } catch (webhookError) {
+                console.warn('Task created but webhook sync failed:', webhookError);
+                alert('Task added to queue, but agent sync failed. Check backend/agent logs.');
+            }
 
             setContent('');
             setIsOpen(false);
@@ -54,16 +114,16 @@ export function QuickAddDialog() {
     }
 
     return (
-        <div className="fixed inset-0 z-[100] overflow-y-auto">
+        <div className="fixed inset-0 z-[11000]" role="dialog" aria-modal="true" aria-label="Quick Add Task">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                 onClick={() => setIsOpen(false)}
             />
 
             {/* Dialog Container */}
-            <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
-                <div className="bg-white dark:bg-sage-900 w-full max-w-md rounded-2xl shadow-2xl border border-sage-200 dark:border-sage-700/50 overflow-hidden pointer-events-auto opacity-0 animate-fade-in">
+            <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6">
+                <div className="bg-white dark:bg-sage-900 w-full max-w-md max-h-[calc(100vh-2rem)] rounded-2xl shadow-2xl border border-sage-200 dark:border-sage-700/50 overflow-hidden opacity-0 animate-fade-in flex flex-col">
                     {/* Header */}
                     <div className="flex items-center justify-between p-5 border-b border-sage-100 dark:border-sage-800 bg-sage-50/50 dark:bg-sage-800/30">
                         <div className="flex items-center gap-3">
@@ -81,7 +141,7 @@ export function QuickAddDialog() {
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="p-5 space-y-5">
+                    <form onSubmit={handleSubmit} className="p-5 space-y-5 overflow-y-auto">
                         <div>
                             <label className="block text-xs font-medium text-sage-500 dark:text-sage-400 mb-2 uppercase tracking-wide">
                                 What needs attention?
@@ -90,7 +150,7 @@ export function QuickAddDialog() {
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 placeholder="e.g. Critical bug in production, Client meeting at 3pm..."
-                                className="w-full min-h-[120px] p-4 rounded-xl border border-sage-200 dark:border-sage-700 bg-sage-50/50 dark:bg-sage-800/30 text-sage-900 dark:text-sage-100 placeholder:text-sage-400 dark:placeholder:text-sage-500 focus:outline-none focus:border-sage-500 dark:focus:border-sage-400 focus:ring-2 focus:ring-sage-500/20 resize-none text-sm transition-all"
+                                className="w-full min-h-[120px] max-h-[40vh] p-4 rounded-xl border border-sage-200 dark:border-sage-700 bg-sage-50/50 dark:bg-sage-800/30 text-sage-900 dark:text-sage-100 placeholder:text-sage-400 dark:placeholder:text-sage-500 focus:outline-none focus:border-sage-500 dark:focus:border-sage-400 focus:ring-2 focus:ring-sage-500/20 resize-none text-sm transition-all"
                                 autoFocus
                             />
                         </div>

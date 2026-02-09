@@ -12,7 +12,7 @@ from typing import Any, Dict, Literal
 
 import redis
 from fastapi import APIRouter, BackgroundTasks
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ..config import get_settings
 
@@ -25,7 +25,7 @@ class WebhookPayload(BaseModel):
     content: str
     sender: str
     source_id: str | None = None
-    metadata: Dict[str, Any] = {}
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 def get_redis_client() -> redis.Redis:
@@ -72,4 +72,3 @@ async def simulate_webhook(payload: WebhookPayload, background_tasks: Background
     background_tasks.add_task(push_to_queue, payload)
 
     return {"status": "accepted", "message": "Signal received and queued for processing"}
-

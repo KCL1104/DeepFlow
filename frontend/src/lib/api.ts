@@ -9,13 +9,11 @@ async function fetchClient<T>(endpoint: string, options: RequestInit = {}): Prom
     const token = data.session?.access_token
 
     // Construct Headers
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        ...options.headers,
-    };
+    const headers = new Headers(options.headers);
+    headers.set('Content-Type', 'application/json');
 
     if (token) {
-        (headers as any)['Authorization'] = `Bearer ${token}`;
+        headers.set('Authorization', `Bearer ${token}`);
     }
 
     const config: RequestInit = {
@@ -64,6 +62,16 @@ export interface Task {
     completed_at?: string;
 }
 
+export interface TaskCreateRequest {
+    title: string;
+    summary?: string;
+    suggested_action?: string;
+    urgency?: number;
+    estimated_minutes?: number;
+    deadline?: string;
+    context_tags?: string[];
+}
+
 export interface QueueResponse {
     current_task: Task | null;
     queue: Task[];
@@ -92,6 +100,11 @@ export const api = {
     },
     queue: {
         get: () => fetchClient<QueueResponse>('/queue'),
+        create: (task: TaskCreateRequest) =>
+            fetchClient<Task>('/queue', {
+                method: 'POST',
+                body: JSON.stringify(task)
+            }),
         history: (limit: number = 20, offset: number = 0) =>
             fetchClient<Task[]>(`/queue/history?limit=${limit}&offset=${offset}`),
     },

@@ -4,9 +4,9 @@ Pomodoro Settings API Router
 Endpoints for managing Pomodoro timer settings.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-from ..deps import CurrentUser
+from ..deps import CurrentUser, get_current_user
 from ..db import get_redis_client
 from ..schemas import PomodoroSettings
 
@@ -17,12 +17,12 @@ POMODORO_KEY_PREFIX = "user:pomodoro:"
 
 
 @router.get("/settings", response_model=PomodoroSettings)
-async def get_pomodoro_settings(user: CurrentUser):
+async def get_pomodoro_settings(user: CurrentUser = Depends(get_current_user)):
     """Get user's Pomodoro timer settings."""
     redis = get_redis_client()
-    
-    work = redis.get(f"{POMODORO_KEY_PREFIX}{user['id']}:work")
-    break_mins = redis.get(f"{POMODORO_KEY_PREFIX}{user['id']}:break")
+
+    work = redis.get(f"{POMODORO_KEY_PREFIX}{user.id}:work")
+    break_mins = redis.get(f"{POMODORO_KEY_PREFIX}{user.id}:break")
     
     return PomodoroSettings(
         work_minutes=int(work) if work else 30,
@@ -33,12 +33,12 @@ async def get_pomodoro_settings(user: CurrentUser):
 @router.put("/settings", response_model=PomodoroSettings)
 async def update_pomodoro_settings(
     request: PomodoroSettings,
-    user: CurrentUser,
+    user: CurrentUser = Depends(get_current_user),
 ):
     """Update user's Pomodoro timer settings."""
     redis = get_redis_client()
-    
-    redis.set(f"{POMODORO_KEY_PREFIX}{user['id']}:work", request.work_minutes)
-    redis.set(f"{POMODORO_KEY_PREFIX}{user['id']}:break", request.break_minutes)
+
+    redis.set(f"{POMODORO_KEY_PREFIX}{user.id}:work", request.work_minutes)
+    redis.set(f"{POMODORO_KEY_PREFIX}{user.id}:break", request.break_minutes)
     
     return request

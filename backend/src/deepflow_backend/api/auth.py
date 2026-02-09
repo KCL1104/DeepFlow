@@ -6,9 +6,9 @@ Note: Most auth is handled client-side with Supabase JS SDK.
 These endpoints are for server-side token validation and user info.
 """
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from ..deps import CurrentUser
+from ..deps import CurrentUser, get_current_user
 from ..db import get_supabase_client
 
 
@@ -16,16 +16,16 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.get("/me")
-async def get_current_user_info(user: CurrentUser):
+async def get_current_user_info(user: CurrentUser = Depends(get_current_user)):
     """Get current authenticated user's information."""
     return {
-        "id": user["id"],
-        "email": user["email"],
+        "id": user.id,
+        "email": user.email,
     }
 
 
 @router.post("/signout")
-async def signout(user: CurrentUser):
+async def signout(user: CurrentUser = Depends(get_current_user)):
     """
     Server-side signout.
     Note: Client should also call supabase.auth.signOut()

@@ -6,10 +6,10 @@ Endpoints for updating individual task status.
 
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from ..deps import CurrentUser, QueueManager
-from ..db import get_supabase_client
+from ..deps import CurrentUser, get_current_user, get_queue_manager
+from ..db import get_supabase_client, TaskQueueManager
 from ..schemas import TaskUpdate, TaskResponse, TaskStatus
 
 
@@ -20,8 +20,8 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 async def update_task(
     task_id: str,
     request: TaskUpdate,
-    user: CurrentUser,
-    queue_manager: QueueManager,
+    user: CurrentUser = Depends(get_current_user),
+    queue_manager: TaskQueueManager = Depends(get_queue_manager),
 ):
     """Update task status or details."""
     supabase = get_supabase_client()
@@ -31,7 +31,7 @@ async def update_task(
         supabase.table("tasks")
         .select("*")
         .eq("id", task_id)
-        .eq("user_id", user["id"])
+        .eq("user_id", user.id)
         .single()
         .execute()
     )
@@ -56,16 +56,16 @@ async def update_task(
         # Handle status-specific logic
         if request.status == TaskStatus.COMPLETED:
             update_data["completed_at"] = datetime.utcnow().isoformat()
-            queue_manager.clear_current_task(user["id"])
-            queue_manager.remove_task(user["id"], task_id)
+            queue_manager.clear_current_task(user.id)
+            queue_manager.remove_task(user.id, task_id)
 
         elif request.status == TaskStatus.BLOCKED:
-            queue_manager.clear_current_task(user["id"])
+            queue_manager.clear_current_task(user.id)
 
         elif request.status == TaskStatus.DEFERRED:
-            queue_manager.clear_current_task(user["id"])
+            queue_manager.clear_current_task(user.id)
             # Re-add to queue with lower priority
-            queue_manager.add_task(user["id"], task_id, existing.data.get("urgency", 5) * 5)
+            queue_manager.add_task(user.id, task_id, existing.data.get("urgency", 5) * 5)
 
     result = (
         supabase.table("tasks")

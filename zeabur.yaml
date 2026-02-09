@@ -3,79 +3,74 @@ kind: Template
 metadata:
   name: DeepFlow
 spec:
-  description: DeepFlow - AI-powered attention guardian that protects your focus.
+  description: DeepFlow - AI-powered attention guardian for focus protection.
   tags:
     - AI
     - Productivity
-    - Tool
+    - Automation
+
   variables:
-    # Backend & Agent Shared
     - key: REDIS_URL
       type: STRING
       name: Redis URL
-      description: Redis connection URL (e.g., redis://:password@host:port).
-    
-    # Supabase (Backend)
+      description: Redis connection URL (redis://:password@host:port).
+
     - key: SUPABASE_URL
       type: STRING
       name: Supabase URL
-      description: Your Supabase Project URL.
-    - key: SUPABASE_KEY
+      description: Your Supabase project URL.
+    - key: SUPABASE_ANON_KEY
       type: PASSWORD
       name: Supabase Anon Key
-      description: Your Supabase Anonymous Key.
+      description: Supabase anonymous key.
     - key: SUPABASE_SERVICE_ROLE_KEY
       type: PASSWORD
       name: Supabase Service Role Key
-      description: Your Supabase Service Role Key.
+      description: Supabase service role key.
 
-    # AI & Agent (Agent)
     - key: OPENAI_API_KEY
       type: PASSWORD
       name: OpenAI API Key
-      description: API Key for OpenAI.
+      description: API key for OpenAI-compatible model provider.
     - key: OPENAI_API_BASE
       type: STRING
       name: OpenAI API Base
-      description: Base URL for OpenAI API (optional).
+      description: Optional OpenAI-compatible API base URL.
     - key: LLM_MODEL
       type: STRING
       name: LLM Model
-      description: Model name to use (e.g., gpt-4o).
-    
-    # Opik (Agent)
+      description: Model name used by the agent (for example gpt-4o).
+
     - key: OPIK_API_KEY
       type: PASSWORD
       name: Opik API Key
-      description: API Key for Opik.
+      description: API key for Opik tracing.
     - key: OPIK_PROJECT_NAME
       type: STRING
-      name: Opik Project Name
-      description: Opik Project Name.
+      name: Opik Project
+      description: Opik project name.
     - key: OPIK_WORKSPACE
       type: STRING
       name: Opik Workspace
-      description: Opik Workspace.
-    
-    # Telegram (Agent)
+      description: Opik workspace name.
+
     - key: TELEGRAM_BOT_TOKEN
       type: PASSWORD
       name: Telegram Bot Token
-      description: Token for your Telegram Bot.
+      description: Telegram bot token for DeepFlow bot.
     - key: SLACK_BOT_TOKEN
       type: PASSWORD
       name: Slack Bot Token
-      description: Token for your Slack Bot.
-    
-    # Domains
+      description: Slack bot token.
+
     - key: BACKEND_DOMAIN
       type: DOMAIN
       name: Backend Domain
-      description: The domain to assign to the Backend API.
+      description: Public domain for backend API.
     - key: FRONTEND_DOMAIN
       type: DOMAIN
       name: Frontend Domain
-      description: The domain to assign to the Frontend App.
+      description: Public domain for frontend app.
 
   services:
     - name: Backend
@@ -92,14 +87,20 @@ spec:
             port: 8000
             type: HTTP
         env:
+          APP_ENV:
+            default: production
           REDIS_URL:
             default: ${REDIS_URL}
           SUPABASE_URL:
             default: ${SUPABASE_URL}
           SUPABASE_ANON_KEY:
-            default: ${SUPABASE_KEY}
+            default: ${SUPABASE_ANON_KEY}
           SUPABASE_SERVICE_ROLE_KEY:
             default: ${SUPABASE_SERVICE_ROLE_KEY}
+          CORS_ORIGINS:
+            default: https://${FRONTEND_DOMAIN}
+          PORT:
+            default: "8000"
 
     - name: Agent
       template: GIT
@@ -110,6 +111,8 @@ spec:
           branch: main
           rootDirectory: agent
         env:
+          AGENT_MODE:
+            default: worker
           REDIS_URL:
             default: ${REDIS_URL}
           OPENAI_API_KEY:
@@ -149,11 +152,15 @@ spec:
             port: 3000
             type: HTTP
         env:
+          NODE_ENV:
+            default: production
+          PORT:
+            default: "3000"
           NEXT_PUBLIC_API_URL:
             default: https://${BACKEND_DOMAIN}/api/v1
           NEXT_PUBLIC_SUPABASE_URL:
             default: ${SUPABASE_URL}
           NEXT_PUBLIC_SUPABASE_ANON_KEY:
-            default: ${SUPABASE_KEY}
+            default: ${SUPABASE_ANON_KEY}
           NEXT_PUBLIC_SITE_URL:
             default: https://${FRONTEND_DOMAIN}

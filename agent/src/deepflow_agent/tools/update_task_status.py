@@ -55,7 +55,7 @@ def _update_task_status_impl(
     """Internal implementation with Opik tracing."""
     redis = get_redis_client()
     
-    queue_key = f"user:{user_id}:queue"
+    queue_key = f"user:queue:{user_id}"
     task_key = f"task:{task_id}"
     
     # Get task details
@@ -79,7 +79,7 @@ def _update_task_status_impl(
         # Remove from active queue
         redis.zrem(queue_key, task_id)
         # Move to completed set
-        completed_key = f"user:{user_id}:completed"
+        completed_key = f"user:completed:{user_id}"
         redis.zadd(completed_key, {task_id: datetime.utcnow().timestamp()})
         
     elif status == "blocked":
